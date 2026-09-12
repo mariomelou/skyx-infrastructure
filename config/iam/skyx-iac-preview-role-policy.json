@@ -23,7 +23,8 @@
       ],
       "Resource": [
         "arn:aws:cloudformation:us-east-1:129346407469:stack/SkyxAdoption/*",
-        "arn:aws:cloudformation:us-east-1:129346407469:stack/SkyxEcrAdoption/*"
+        "arn:aws:cloudformation:us-east-1:129346407469:stack/SkyxEcrAdoption/*",
+        "arn:aws:cloudformation:us-east-1:129346407469:stack/SkyxObservability/*"
       ]
     }
   ]
