@@ -33,6 +33,8 @@ export const skyxProduction = {
       containerPort: 8000,
       imageRepository: "skyx-backend",
       logGroup: "/ecs/skyx-api",
+      deploymentCircuitBreaker: false,
+      deploymentCloudWatchAlarms: false,
     },
     frontend: {
       serviceName: "skyx-frontend",
@@ -42,6 +44,8 @@ export const skyxProduction = {
       containerPort: 3001,
       imageRepository: "skyx-frontend",
       logGroup: "/ecs/skyx-frontend",
+      deploymentCircuitBreaker: false,
+      deploymentCloudWatchAlarms: false,
     },
     taskExecutionRoleName: "SkyXEcsTaskExecutionRole",
     desiredCount: 1,
@@ -58,8 +62,16 @@ export const skyxProduction = {
       targetGroupName: "skyx-prod-api",
       targetGroupArn:
         "arn:aws:elasticloadbalancing:us-east-1:129346407469:targetgroup/skyx-prod-api/b07e0985d7d24599",
+      listenerArn:
+        "arn:aws:elasticloadbalancing:us-east-1:129346407469:listener/app/skyx-prod-alb/daa606ab7cfc22fc/04b7e22e969f7840",
+      ruleArn:
+        "arn:aws:elasticloadbalancing:us-east-1:129346407469:listener-rule/app/skyx-prod-alb/daa606ab7cfc22fc/04b7e22e969f7840/29412e36ad4e142b",
       listener: "HTTP:80",
       ruleCount: 1,
+      ruleConditions: "default rule; no conditions",
+      targetGroupStickiness: false,
+      responseHeaders: "none",
+      serverHeader: true,
     },
     frontend: {
       name: "skyx-prod-frontend-alb",
@@ -67,8 +79,16 @@ export const skyxProduction = {
       targetGroupName: "skyx-prod-frontend",
       targetGroupArn:
         "arn:aws:elasticloadbalancing:us-east-1:129346407469:targetgroup/skyx-prod-frontend/dba8ae93ab308987",
+      listenerArn:
+        "arn:aws:elasticloadbalancing:us-east-1:129346407469:listener/app/skyx-prod-frontend-alb/7841fca276b64cd7/05ef8d1e540d6061",
+      ruleArn:
+        "arn:aws:elasticloadbalancing:us-east-1:129346407469:listener-rule/app/skyx-prod-frontend-alb/7841fca276b64cd7/05ef8d1e540d6061/ffdc84d92b445da8",
       listener: "HTTP:80",
       ruleCount: 1,
+      ruleConditions: "default rule; no conditions",
+      targetGroupStickiness: false,
+      responseHeaders: "none",
+      serverHeader: true,
     },
   },
   database: {
@@ -100,4 +120,38 @@ export const skyxProduction = {
     "skyx/prod/database-app-url",
     "skyx/prod/database-admin-url",
   ],
+  iam: {
+    ecsTaskExecutionRole: {
+      name: "SkyXEcsTaskExecutionRole",
+      trustPrincipal: "ecs-tasks.amazonaws.com",
+      policies: [
+        "AmazonECSTaskExecutionRolePolicy",
+        "SkyXFrontendSecretRead",
+        "SkyXSecretsRead",
+      ],
+      permissionsBoundary: false,
+    },
+    githubActionsEcrRole: {
+      name: "SkyXGitHubActionsEcrRole",
+      trustPrincipal: "token.actions.githubusercontent.com",
+      oidcAudience: "sts.amazonaws.com",
+      policies: ["SkyXEcrPush", "SkyxEcsMigrationRunTask"],
+      permissionsBoundary: false,
+    },
+    codeBuildRole: {
+      name: "SkyXCodeBuildRole",
+      policyDocuments: "PENDING_READ_ONLY_CAPTURE",
+    },
+  },
+  observability: {
+    cloudWatchAlarmCount: 0,
+    wafWebAclCount: 0,
+    acmCertificateCount: 0,
+    config: {
+      recorder: "on",
+      frequency: "continuous",
+      retention: "7 years",
+      ownership: "Control Tower / AWS Config boundary requires review",
+    },
+  },
 } as const;
