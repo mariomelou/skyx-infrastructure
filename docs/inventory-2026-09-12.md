@@ -31,4 +31,4 @@ The inventory was performed in the AWS Console using the existing Chrome session
 
 ## Not claimed by this inventory
 
-The following is deliberately `PENDING` or `UNVERIFIED`: the complete resource-by-resource import specification. This requires an approved ownership design before adoption is modeled as authoritative.
+This inventory deliberately does not claim CloudFormation ownership or import execution. The resource-by-resource adoption design is documented separately, but no component-specific change set, import, hardening change, or production deployment has been performed.
