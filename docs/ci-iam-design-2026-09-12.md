@@ -19,7 +19,9 @@ Both roles should trust `token.actions.githubusercontent.com` with:
 - repository subjects limited to `repo:melou-ai/skyx-infrastructure:*`;
 - preview limited to pull requests and the `main` ref;
 - deployment limited to the protected `production` environment and explicitly approved workflow path;
-- account restriction `129346407469` enforced in the workflow through `allowed-account-ids`.
+- account restriction `129346407469` enforced in the workflow through an explicit `sts get-caller-identity` check.
+
+The repository uses GitHub's immutable OIDC subject format. The preview role therefore also allows the exact subjects `repo:melou-ai@264860045/skyx-infrastructure@1367627542:pull_request` and `repo:melou-ai@264860045/skyx-infrastructure@1367627542:ref:refs/heads/main`, alongside the legacy name-based subjects for transition compatibility.
 
 The exact trust document must be reviewed against the GitHub OIDC subject emitted by the chosen event before creating either role. Fork pull requests must not receive AWS credentials.
 
