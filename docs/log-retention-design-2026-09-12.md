@@ -17,3 +17,5 @@ npm run verify:log-retention
 ```
 
 The verifier proves the two expected names, retention fixture, and retain policies. Applying the template requires a resource-by-resource import/update change set, exact pre/post log-group evidence, a retention decision, the protected GitHub environment, and explicit approval. It must not be mixed with backend migrations or ECS service changes.
+
+The guarded GitHub validation run `34724135711` passed synthesis and authenticated template diff for this component. Its import and generic deployment jobs were skipped by design.
