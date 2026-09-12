@@ -11,6 +11,16 @@ on:
         required: true
         default: false
         type: boolean
+      import:
+        description: "Execute the separately approved ECR import change set"
+        required: true
+        default: false
+        type: boolean
+      change_set_arn:
+        description: "Exact approved ECR import change set ARN"
+        required: true
+        default: arn:aws:cloudformation:us-east-1:129346407469:changeSet/skyx-ecr-backend-import-20260912/d6c878be-6e10-4981-9c83-3b02ef9e1f39
+        type: string
       adoption_component:
         description: "Optional adoption component to synthesize during a manual run"
         required: true
@@ -60,6 +70,23 @@ jobs:
         run: |
           echo "::error::ECR adoption execution remains change-set approval-gated and is not wired to the generic deploy job."
           exit 1
+      - name: Reject conflicting production operations
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.deploy == true && inputs.import == true }}
+        run: |
+          echo "::error::Choose either deploy or import, never both in one manual run."
+          exit 1
+      - name: Require guarded ECR import selection
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.import == true }}
+        env:
+          IMPORT_ENABLED: ${{ vars.AWS_IAC_IMPORT_ENABLED }}
+          ADOPTION_COMPONENT: ${{ inputs.adoption_component }}
+          ECR_REPOSITORY: ${{ inputs.ecr_repository }}
+          CHANGE_SET_ARN: ${{ inputs.change_set_arn }}
+        run: |
+          test "$IMPORT_ENABLED" = "true" || { echo "::error::A repository administrator must enable AWS_IAC_IMPORT_ENABLED before any import job can run."; exit 1; }
+          test "$ADOPTION_COMPONENT" = "ecr" || { echo "::error::Imports are limited to the ECR component."; exit 1; }
+          test "$ECR_REPOSITORY" = "skyx-backend" || { echo "::error::The first approved import is limited to skyx-backend."; exit 1; }
+          test "$CHANGE_SET_ARN" = "arn:aws:cloudformation:us-east-1:129346407469:changeSet/skyx-ecr-backend-import-20260912/d6c878be-6e10-4981-9c83-3b02ef9e1f39" || { echo "::error::The change set ARN is not the reviewed approval-packet ARN."; exit 1; }
       - name: Require read-only preview role
         if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
         env:
@@ -88,6 +115,55 @@ jobs:
       - name: Diff selected ECR adoption component
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.adoption_component == 'ecr' }}
         run: npx cdk diff SkyxEcrAdoption -c adoptionComponent=ecr -c ecrRepository=${{ inputs.ecr_repository }} --method template
+
+  import:
+    name: execute approved ECR import
+    if: ${{ github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && inputs.import == true && inputs.adoption_component == 'ecr' && inputs.ecr_repository == 'skyx-backend' && vars.AWS_IAC_IMPORT_ENABLED == 'true' }}
+    needs: validate
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: package-lock.json
+      - name: Install
+        run: npm ci
+      - name: Require deployment role
+        env:
+          DEPLOY_ROLE_ARN: ${{ secrets.AWS_IAC_DEPLOY_ROLE_ARN }}
+        run: |
+          test -n "$DEPLOY_ROLE_ARN" || { echo "::error::Configure AWS_IAC_DEPLOY_ROLE_ARN in the protected production environment."; exit 1; }
+      - name: Configure deployment credentials
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ secrets.AWS_IAC_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+      - name: Verify deployment account
+        run: test "$(aws sts get-caller-identity --query Account --output text)" = "129346407469"
+      - name: Revalidate exact approved change set
+        env:
+          CHANGE_SET_ARN: ${{ inputs.change_set_arn }}
+        run: |
+          test "$CHANGE_SET_ARN" = "arn:aws:cloudformation:us-east-1:129346407469:changeSet/skyx-ecr-backend-import-20260912/d6c878be-6e10-4981-9c83-3b02ef9e1f39"
+          test "$(aws cloudformation describe-change-set --change-set-name "$CHANGE_SET_ARN" --query Status --output text)" = "CREATE_COMPLETE"
+          test "$(aws cloudformation describe-change-set --change-set-name "$CHANGE_SET_ARN" --query 'length(Changes)' --output text)" = "1"
+          test "$(aws cloudformation describe-change-set --change-set-name "$CHANGE_SET_ARN" --query 'Changes[0].ResourceChange.Action' --output text)" = "Import"
+          test "$(aws cloudformation describe-change-set --change-set-name "$CHANGE_SET_ARN" --query 'Changes[0].ResourceChange.ResourceType' --output text)" = "AWS::ECR::Repository"
+          test "$(aws cloudformation describe-change-set --change-set-name "$CHANGE_SET_ARN" --query 'Changes[0].ResourceChange.PhysicalResourceId' --output text)" = "skyx-backend"
+      - name: Execute approved import change set
+        env:
+          CHANGE_SET_ARN: ${{ inputs.change_set_arn }}
+        run: aws cloudformation execute-change-set --change-set-name "$CHANGE_SET_ARN"
+      - name: Wait for import completion
+        run: aws cloudformation wait stack-import-complete --stack-name SkyxEcrAdoption
+      - name: Verify imported resource and post-import diff
+        run: |
+          test "$(aws cloudformation describe-stack-resources --stack-name SkyxEcrAdoption --query 'StackResources[?LogicalResourceId==`Repository`].PhysicalResourceId' --output text)" = "arn:aws:ecr:us-east-1:129346407469:repository/skyx-backend"
+          npm run verify:ecr
+          npx cdk diff SkyxEcrAdoption -c adoptionComponent=ecr -c ecrRepository=skyx-backend --method template
 
   deploy:
     name: approved production deployment

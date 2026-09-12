@@ -27,14 +27,18 @@ The target snapshot was read-only and showed `MUTABLE` tags, scan-on-push enable
 
 ## Execution guard
 
-Do not execute unless the approval explicitly names the change set ARN above. If approved, execute only this change set:
+Do not execute locally with `skyx-admin`; that would bypass the protected GitHub environment and the least-privilege deploy role. After a GitHub administrator has configured `production`, required reviewers, `AWS_IAC_DEPLOY_ROLE_ARN`, and `AWS_IAC_IMPORT_ENABLED`, trigger the guarded workflow with the exact ARN:
 
 ```bash
-aws cloudformation execute-change-set \
-  --change-set-name arn:aws:cloudformation:us-east-1:129346407469:changeSet/skyx-ecr-backend-import-20260912/d6c878be-6e10-4981-9c83-3b02ef9e1f39 \
-  --region us-east-1 \
-  --profile skyx-admin
+gh workflow run infrastructure --ref main \
+  -f deploy=false \
+  -f import=true \
+  -f adoption_component=ecr \
+  -f ecr_repository=skyx-backend \
+  -f change_set_arn=arn:aws:cloudformation:us-east-1:129346407469:changeSet/skyx-ecr-backend-import-20260912/d6c878be-6e10-4981-9c83-3b02ef9e1f39
 ```
+
+The workflow revalidates the status, count, action, type, and physical ID before executing. The protected environment reviewer is the final execution gate.
 
 After execution, verify the stack reaches a stable status, `describe-stack-resources` maps `Repository` to the same ECR ARN, the repository properties remain unchanged, and an opt-in `cdk diff` shows no unexpected replacement, deletion, policy, lifecycle, tag, image, or unrelated resource change. If any check fails, stop and do not proceed to another component.
 

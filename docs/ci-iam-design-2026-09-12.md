@@ -88,6 +88,9 @@ gh api --method POST repos/melou-ai/skyx-infrastructure/environments/production/
 
 gh secret set AWS_IAC_DEPLOY_ROLE_ARN --env production \
   --body arn:aws:iam::129346407469:role/SkyXIacDeployRole
+
+gh variable set AWS_IAC_IMPORT_ENABLED \
+  --body true
 ```
 
-Afterward, verify the environment protection rules and secret through the repository settings/API before enabling any production run. Do not run the import or deploy job merely because the environment exists; review the exact change set and obtain the separate execution approval first.
+Afterward, verify the environment protection rules, secret, and repository variable through the repository settings/API before enabling any production run. Do not run the import or deploy job merely because the environment exists; review the exact change set and obtain the separate execution approval first.
