@@ -10,12 +10,13 @@ The first commit is intentionally a non-owning adoption manifest. It records the
 
 ```bash
 npm install
+npm test
 npm run build
 npm run synth
 npm run diff
 ```
 
-No `cdk deploy`, `cdk import`, bootstrap, migration, or production mutation is part of local validation. Any future ownership change requires a reviewed diff and explicit approval.
+`npm test` runs type-checking, synthesis, and the read-only manifest invariant check. No `cdk deploy`, `cdk import`, bootstrap, migration, or production mutation is part of local validation. Any future ownership change requires a reviewed diff and explicit approval.
 
 ## Current boundary
 

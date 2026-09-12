@@ -27,4 +27,4 @@ npm test
 npm run diff -- --profile skyx
 ```
 
-`npm test` is local-only (`build` plus `synth`). The CDK diff is the AWS-dependent gate and must be reviewed for replacements, deletions, imports, or unexpected changes before any future ownership work.
+`npm test` is local-only (type-check, synth, and the read-only manifest invariant check). The CDK diff is the AWS-dependent gate and must be reviewed for replacements, deletions, imports, or unexpected changes before any future ownership work.
