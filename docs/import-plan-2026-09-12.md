@@ -2,6 +2,10 @@
 
 This is a design and review artifact. It is not an import command, a CloudFormation template, or an authorization to change production. The current CDK stack remains reference-only and declares no application resources.
 
+## First candidate for staged adoption
+
+The proposed first candidate is one ECR repository in a dedicated `SkyxEcrAdoption` stack. The evidence, exact observed properties, required import-only change-set checks, and rollback boundary are recorded in [adoption-wave-1-ecr-2026-09-12.md](adoption-wave-1-ecr-2026-09-12.md). `skyx-backend` is recommended first because the procedure does not touch running ECS tasks, task definitions, listeners, secrets, database state, or public endpoints. This remains a proposal: no repository is import-ready until the selected repository, template, change set, role permissions, and execution window are reviewed and explicitly approved.
+
 ## Resource-by-resource treatment
 
 | Resource group | Current identity/evidence | Proposed treatment | Risk and gate |
@@ -34,4 +38,4 @@ This is a design and review artifact. It is not an import command, a CloudFormat
 
 ## Current decision
 
-No resource is import-ready in the current commit because the CDK stack intentionally contains only a read-only adoption manifest. This plan defines the safe boundary and sequence; it does not authorize an import or production deployment.
+No resource has been imported in the current commit because the CDK stack intentionally contains only a read-only adoption manifest. The ECR wave is scoped as the first candidate, but it is not import-ready until its opt-in template and import-only change set are generated and approved. This plan defines the safe boundary and sequence; it does not authorize an import or production deployment.

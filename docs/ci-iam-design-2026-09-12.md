@@ -38,7 +38,7 @@ The created `SkyXIacPreviewRole` uses these actions against the exact bootstrap 
 
 ## Deployment boundary
 
-The deployment role must be separate from preview and limited to the approved CloudFormation lifecycle for the specific SkyX stack, plus the minimum CDK bootstrap read/write paths required by the selected deployment mode. It must not receive broad application-operation permissions by default.
+The deployment role must be separate from preview and limited to the approved CloudFormation lifecycle for the specific SkyX stack, plus the minimum CDK bootstrap read/write paths required by the selected deployment mode. The concrete first-wave proposal is documented in [deploy-role-scope-2026-09-12.md](deploy-role-scope-2026-09-12.md); it targets only a dedicated ECR adoption stack and remains design-only until the component and import change set are approved. It must not receive broad application-operation permissions by default.
 
 Explicit exclusions for the initial role design:
 
@@ -59,6 +59,6 @@ The initial CLI session was valid for account `129346407469` as `AWSPowerUserAcc
 1. Confirm the authenticated `cdk diff` and the stack/bootstrap resources it actually reads.
 2. Set the created preview role ARN as `AWS_IAC_PREVIEW_ROLE_ARN` through the approved repository settings process. **Done.**
 3. Run the workflow on a same-repository pull request and confirm the caller account is `129346407469`.
-4. Create the deploy role only after the preview diff and import plan are approved.
+4. Create the deploy role only after the preview diff, ECR component, and import plan are approved; use the scoped proposal in `docs/deploy-role-scope-2026-09-12.md`.
 5. Configure the protected `production` environment and `AWS_IAC_DEPLOY_ROLE_ARN` secret.
 6. Keep import and production deployment manual; never add them to the push or pull-request path.
