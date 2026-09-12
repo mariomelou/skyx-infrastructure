@@ -94,3 +94,11 @@ gh variable set AWS_IAC_IMPORT_ENABLED \
 ```
 
 Afterward, verify the environment protection rules, secret, and repository variable through the repository settings/API before enabling any production run. Do not run the import or deploy job merely because the environment exists; review the exact change set and obtain the separate execution approval first.
+
+The repository includes a read-only handoff verifier:
+
+```bash
+npm run verify:production-gate
+```
+
+It checks the environment reviewers, custom `main` branch policy, presence (not contents) of `AWS_IAC_DEPLOY_ROLE_ARN`, and the exact `AWS_IAC_IMPORT_ENABLED=true` value. Until an administrator creates the environment, it exits with `PRODUCTION_GATE_BLOCKED` and does not attempt any write.

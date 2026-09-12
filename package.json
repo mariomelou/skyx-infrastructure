@@ -14,7 +14,8 @@
     "verify:ecs-scaling": "cdk synth SkyxEcsScaling -c hardeningComponent=ecs-scaling -c apiMinCapacity=1 -c apiMaxCapacity=4 -c apiTargetCpu=60 -c frontendMinCapacity=1 -c frontendMaxCapacity=3 -c frontendTargetCpu=60 >/dev/null && node scripts/verify-ecs-scaling.mjs",
     "verify:waf": "cdk synth SkyxWaf -c hardeningComponent=waf -c wafMode=count >/dev/null && node scripts/verify-waf.mjs",
     "verify:log-retention": "cdk synth SkyxLogRetention -c hardeningComponent=log-retention -c retentionDays=30 >/dev/null && node scripts/verify-log-retention.mjs",
-    "verify:gates": "node scripts/verify-iac-gates.mjs"
+    "verify:gates": "node scripts/verify-iac-gates.mjs",
+    "verify:production-gate": "node scripts/verify-production-gate.mjs"
   },
   "engines": {
     "node": ">=20 <25",
