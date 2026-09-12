@@ -1,0 +1,30 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "VerifyAccount",
+      "Effect": "Allow",
+      "Action": "sts:GetCallerIdentity",
+      "Resource": "*"
+    },
+    {
+      "Sid": "ReadBootstrapVersion",
+      "Effect": "Allow",
+      "Action": "ssm:GetParameter",
+      "Resource": "arn:aws:ssm:us-east-1:129346407469:parameter/cdk-bootstrap/hnb659fds/version"
+    },
+    {
+      "Sid": "ReadSkyxIaCStacks",
+      "Effect": "Allow",
+      "Action": [
+        "cloudformation:DescribeStacks",
+        "cloudformation:GetTemplate",
+        "cloudformation:ListStackResources"
+      ],
+      "Resource": [
+        "arn:aws:cloudformation:us-east-1:129346407469:stack/SkyxAdoption/*",
+        "arn:aws:cloudformation:us-east-1:129346407469:stack/SkyxEcrAdoption/*"
+      ]
+    }
+  ]
+}

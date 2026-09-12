@@ -1,0 +1,109 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "VerifyAccount",
+      "Effect": "Allow",
+      "Action": "sts:GetCallerIdentity",
+      "Resource": "*"
+    },
+    {
+      "Sid": "EcrReadback",
+      "Effect": "Allow",
+      "Action": [
+        "ecr:DescribeImages",
+        "ecr:DescribeRepositories",
+        "ecr:GetLifecyclePolicy",
+        "ecr:GetRepositoryPolicy",
+        "ecr:ListTagsForResource"
+      ],
+      "Resource": "arn:aws:ecr:us-east-1:129346407469:repository/skyx-backend"
+    },
+    {
+      "Sid": "ValidateEcrTemplate",
+      "Effect": "Allow",
+      "Action": "cloudformation:ValidateTemplate",
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "us-east-1"
+        }
+      }
+    },
+    {
+      "Sid": "ReadEcrAdoptionStack",
+      "Effect": "Allow",
+      "Action": [
+        "cloudformation:DescribeStackEvents",
+        "cloudformation:DescribeStacks",
+        "cloudformation:GetTemplate",
+        "cloudformation:ListChangeSets",
+        "cloudformation:ListStackResources"
+      ],
+      "Resource": "arn:aws:cloudformation:us-east-1:129346407469:stack/SkyxEcrAdoption/*",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "us-east-1"
+        }
+      }
+    },
+    {
+      "Sid": "CreateEcrImportChangeSet",
+      "Effect": "Allow",
+      "Action": "cloudformation:CreateChangeSet",
+      "Resource": "arn:aws:cloudformation:us-east-1:129346407469:stack/SkyxEcrAdoption/*",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "us-east-1"
+        },
+        "StringLike": {
+          "cloudformation:ChangeSetName": "skyx-ecr-*"
+        },
+        "ForAllValues:StringEquals": {
+          "cloudformation:ImportResourceTypes": "AWS::ECR::Repository"
+        }
+      }
+    },
+    {
+      "Sid": "UpdateOnlyEcrAdoptionStack",
+      "Effect": "Allow",
+      "Action": [
+        "cloudformation:CreateStack",
+        "cloudformation:UpdateStack"
+      ],
+      "Resource": "arn:aws:cloudformation:us-east-1:129346407469:stack/SkyxEcrAdoption/*",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "us-east-1"
+        },
+        "ForAllValues:StringEquals": {
+          "cloudformation:ResourceTypes": "AWS::ECR::Repository"
+        }
+      }
+    },
+    {
+      "Sid": "ExecuteNamedEcrChangeSets",
+      "Effect": "Allow",
+      "Action": [
+        "cloudformation:DeleteChangeSet",
+        "cloudformation:DescribeChangeSet",
+        "cloudformation:ExecuteChangeSet"
+      ],
+      "Resource": [
+        "arn:aws:cloudformation:us-east-1:129346407469:stack/SkyxEcrAdoption/*",
+        "arn:aws:cloudformation:us-east-1:129346407469:changeSet/skyx-ecr-*/*"
+      ],
+      "Condition": {
+        "StringLike": {
+          "cloudformation:ChangeSetName": "skyx-ecr-*"
+        }
+      }
+    },
+    {
+      "Sid": "ReadBootstrapVersion",
+      "Effect": "Allow",
+      "Action": "ssm:GetParameter",
+      "Resource": "arn:aws:ssm:us-east-1:129346407469:parameter/cdk-bootstrap/hnb659fds/version"
+    }
+  ]
+}

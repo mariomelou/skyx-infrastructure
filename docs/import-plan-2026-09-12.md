@@ -38,4 +38,4 @@ The proposed first candidate is one ECR repository in a dedicated `SkyxEcrAdopti
 
 ## Current decision
 
-No resource has been imported in the current commit because the CDK stack intentionally contains only a read-only adoption manifest. The ECR wave is scoped as the first candidate, but it is not import-ready until its opt-in template and import-only change set are generated and approved. This plan defines the safe boundary and sequence; it does not authorize an import or production deployment.
+No resource has been imported in the current commit. The ECR wave is scoped as the first candidate, and its opt-in template plus import-only change set have been prepared and validated, but execution remains pending explicit approval. This plan defines the safe boundary and sequence; it does not authorize an import or production deployment.

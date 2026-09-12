@@ -1,6 +1,6 @@
 # Adoption wave 1 — ECR repositories
 
-Status: proposal for review. This document does not create a stack, import a repository, change an image, or authorize production deployment.
+Status: proposal and unexecuted import prepared for review. The opt-in template and a CloudFormation import change set were created and inspected; no repository import, image change, or production deployment was executed.
 
 ## Recommendation
 
@@ -38,10 +38,14 @@ The component must not declare ECS services, task definitions, IAM application r
 6. Obtain explicit approval for the selected repository and change set before execution.
 7. After import, run `describe-stack-resources`, re-run the diff, and record the CloudFormation stack/resource IDs.
 
+## Prepared change-set evidence
+
+The opt-in template was synthesized for `skyx-backend`. Change set `skyx-ecr-backend-import-20260912` is `CREATE_COMPLETE` with action `Import` for exactly one `AWS::ECR::Repository` resource (`Repository` -> `skyx-backend`), no replacement, and no scope details. The stack is currently `REVIEW_IN_PROGRESS`; the change set has not been executed. The current state therefore remains pending explicit approval for execution.
+
 ## Rollback boundary
 
 If the change set contains anything beyond the intended import, stop and delete the unexecuted change set. If an approved import has already executed, preserve the repository with `Retain` and remove only CloudFormation ownership through an explicitly reviewed procedure; never delete the repository or images as rollback.
 
 ## Open approval
 
-The current recommendation is `skyx-backend` as the first imported resource. Approval is still required for the exact repository, dedicated stack name, deploy-role permissions, import change set, and execution window. Until then, both ECR repositories remain externally owned and the CDK manifest remains non-owning.
+The current recommendation is `skyx-backend` as the first imported resource. Approval is still required for the exact repository, dedicated stack name, deploy-role permissions, this change set, and execution window. Until then, both ECR repositories remain externally owned and the CDK default manifest remains non-owning.

@@ -1,6 +1,6 @@
 # IaC deploy role scope — ECR adoption wave 1
 
-Status: design only. This document does not create `SkyXIacDeployRole`, configure a GitHub secret, create a GitHub environment, or authorize a deployment.
+Status: role created and policy verified; GitHub environment/secret and deployment remain pending. This document does not authorize a deployment.
 
 ## Scope
 
@@ -18,6 +18,8 @@ The role is for CloudFormation change-set preparation and execution for that sta
 | `cloudformation:DescribeStacks`, `DescribeStackEvents`, `GetTemplate`, `ListStackResources`, `ListChangeSets` | `arn:aws:cloudformation:us-east-1:129346407469:stack/SkyxEcrAdoption/*` | Inspect the dedicated adoption stack |
 | `cloudformation:CreateChangeSet`, `DescribeChangeSet`, `ExecuteChangeSet`, `DeleteChangeSet` | `arn:aws:cloudformation:us-east-1:129346407469:stack/SkyxEcrAdoption/*` | Prepare, review, execute, or remove the exact approved change set |
 | `ssm:GetParameter` | `arn:aws:ssm:us-east-1:129346407469:parameter/cdk-bootstrap/hnb659fds/version` | Read the CDK bootstrap version |
+
+The versioned policy used for the role is [skyx-iac-deploy-role-policy.json](../config/iam/skyx-iac-deploy-role-policy.json), and its OIDC trust is [skyx-iac-deploy-role-trust.json](../config/iam/skyx-iac-deploy-role-trust.json). The policy adds only readback actions for the selected `skyx-backend` repository and constrains CloudFormation requests to the ECR resource type, `us-east-1`, the `SkyxEcrAdoption` stack, and `skyx-ecr-*` change sets.
 
 `CreateStack` is the one action whose resource scope may require `*` in IAM. If the selected import mechanism does not need it, omit it. The workflow and change-set review remain the control that restricts the operation to `SkyxEcrAdoption`; no other CloudFormation stack should be targeted.
 

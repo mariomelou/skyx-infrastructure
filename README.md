@@ -18,6 +18,8 @@ npm run diff
 
 `npm test` runs type-checking, synthesis, and the read-only manifest invariant check. No `cdk deploy`, `cdk import`, bootstrap, migration, or application production mutation is part of local validation. A dedicated read-only GitHub OIDC preview role was explicitly created for the future pipeline; no application role or ownership change is implied. Any future ownership change requires a reviewed diff and explicit approval.
 
+The first adoption component is opt-in and currently limited to one existing ECR repository. To synthesize its review template without changing the default manifest, run `npx cdk synth SkyxEcrAdoption -c adoptionComponent=ecr -c ecrRepository=skyx-backend`. The allowed repository names are `skyx-backend` and `skyx-frontend`; this command only produces a template. Import requires a separately reviewed change set and explicit approval.
+
 ## Current boundary
 
 - `skyx-frontend` remains the Amplify/Next.js application repository.
