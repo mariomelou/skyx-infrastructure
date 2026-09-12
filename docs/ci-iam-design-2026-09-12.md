@@ -62,3 +62,32 @@ The initial CLI session was valid for account `129346407469` as `AWSPowerUserAcc
 4. **Done:** create the deploy role only after the preview diff, ECR component, and import plan are scoped; use the policy in `docs/deploy-role-scope-2026-09-12.md`.
 5. Configure the protected `production` environment and `AWS_IAC_DEPLOY_ROLE_ARN` secret using a GitHub administrator.
 6. Keep import and production deployment manual; never add them to the push or pull-request path.
+
+## GitHub administrator activation
+
+The current `gh` token has repository `push` but not `admin` permission, so these commands must be run by a GitHub repository administrator. They create the protected environment, require an organization-admin reviewer, restrict deployments to `main`, and store the role ARN only as an environment secret:
+
+```bash
+gh api --method PUT repos/melou-ai/skyx-infrastructure/environments/production --input - <<'JSON'
+{
+  "wait_timer": 0,
+  "prevent_self_review": true,
+  "reviewers": [
+    {"type": "User", "id": 65774721},
+    {"type": "User", "id": 40343851}
+  ],
+  "deployment_branch_policy": {
+    "protected_branches": false,
+    "custom_branch_policies": true
+  }
+}
+JSON
+
+gh api --method POST repos/melou-ai/skyx-infrastructure/environments/production/deployment-branch-policies \
+  -f name=main -f type=branch
+
+gh secret set AWS_IAC_DEPLOY_ROLE_ARN --env production \
+  --body arn:aws:iam::129346407469:role/SkyXIacDeployRole
+```
+
+Afterward, verify the environment protection rules and secret through the repository settings/API before enabling any production run. Do not run the import or deploy job merely because the environment exists; review the exact change set and obtain the separate execution approval first.
