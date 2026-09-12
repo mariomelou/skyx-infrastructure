@@ -48,6 +48,10 @@ Explicit exclusions for the initial role design:
 
 Any future import component must add its own reviewed service permissions and change set evidence rather than expanding these roles preemptively.
 
+## Current AWS access boundary
+
+The authenticated CLI session is valid for account `129346407469` as `AWSPowerUserAccess/mario`, but that session is not authorized for `iam:GetRole`. Read-only checks for `SkyXIacPreviewRole` and `SkyXIacDeployRole` therefore returned `AccessDenied`; this does not establish whether either role exists. No IAM mutation was attempted. Role inspection or creation requires an approved IAM administrator session, followed by review of the exact trust and permission policies above.
+
 ## Activation checklist
 
 1. Confirm the authenticated `cdk diff` and the stack/bootstrap resources it actually reads.
