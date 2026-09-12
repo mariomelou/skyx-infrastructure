@@ -20,4 +20,4 @@ This audit reflects the current repository and the read-only AWS Console evidenc
 
 ## Current exit condition
 
-The safe local work and authenticated non-owning CDK diff are complete for the bounded scope. The goal remains active for the approval boundary: no adoption stack creation, CloudFormation import, or production hardening should begin until the specific component, change set, rollback plan, and CI role activation are approved. The existing bootstrap template asset published by `cdk diff` is not application ownership or deployment.
+The bounded IaC preparation objective is complete: inventory, non-owning manifest, local checks, authenticated template diff, preview OIDC pipeline, and evidence documentation are verified. The next phase is intentionally separate and approval-gated: create the deploy role/environment, create the adoption stack or import resources, and apply production hardening only after the specific component, change set, rollback plan, and ownership decisions are approved. The existing bootstrap template asset published by the earlier change-set diff is not application ownership or deployment.
