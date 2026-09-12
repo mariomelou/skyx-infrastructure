@@ -47,6 +47,7 @@ on:
           - observability
           - ecs-scaling
           - waf
+          - log-retention
       alarm_topic_arn:
         description: "Approved same-account SNS topic ARN for observability alarms"
         required: false
@@ -94,6 +95,11 @@ on:
         type: string
       waf_mode:
         description: "WAF mode; the first component is observation-only"
+        required: false
+        default: ""
+        type: string
+      log_retention_days:
+        description: "Approved CloudWatch Logs retention value for import review"
         required: false
         default: ""
         type: string
@@ -163,6 +169,14 @@ jobs:
           test "$WAF_MODE" = "count" || { echo "::error::The first WAF component requires waf_mode=count."; exit 1; }
           npx cdk synth SkyxWaf -c hardeningComponent=waf -c wafMode="$WAF_MODE"
           node scripts/verify-waf.mjs
+      - name: Synthesize selected log-retention component
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.hardening_component == 'log-retention' }}
+        env:
+          LOG_RETENTION_DAYS: ${{ inputs.log_retention_days }}
+        run: |
+          test -n "$LOG_RETENTION_DAYS" || { echo "::error::An approved log retention value is required for import synthesis."; exit 1; }
+          npx cdk synth SkyxLogRetention -c hardeningComponent=log-retention -c retentionDays="$LOG_RETENTION_DAYS"
+          node scripts/verify-log-retention.mjs
       - name: Reject unimplemented ECR deployment path
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.deploy == true && inputs.adoption_component == 'ecr' }}
         run: |
@@ -247,6 +261,11 @@ jobs:
         env:
           WAF_MODE: ${{ inputs.waf_mode }}
         run: npx cdk diff SkyxWaf -c hardeningComponent=waf -c wafMode="$WAF_MODE" --method template
+      - name: Diff selected log-retention component
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.hardening_component == 'log-retention' }}
+        env:
+          LOG_RETENTION_DAYS: ${{ inputs.log_retention_days }}
+        run: npx cdk diff SkyxLogRetention -c hardeningComponent=log-retention -c retentionDays="$LOG_RETENTION_DAYS" --method template
 
   import:
     name: execute approved ECR import

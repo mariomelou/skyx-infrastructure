@@ -12,6 +12,7 @@ import {
   type EcsServiceScalingConfig,
 } from "./stacks/skyx-ecs-scaling-stack.js";
 import { SkyxWafStack } from "./stacks/skyx-waf-stack.js";
+import { SkyxLogRetentionStack } from "./stacks/skyx-log-retention-stack.js";
 
 const app = new cdk.App();
 
@@ -64,10 +65,12 @@ if (adoptionComponent === "ecr") {
 
 if (
   hardeningComponent !== undefined &&
-  !["observability", "ecs-scaling", "waf"].includes(hardeningComponent)
+  !["observability", "ecs-scaling", "waf", "log-retention"].includes(
+    hardeningComponent,
+  )
 ) {
   throw new Error(
-    `Unsupported hardeningComponent '${String(hardeningComponent)}'; use 'observability', 'ecs-scaling', or 'waf'.`,
+    `Unsupported hardeningComponent '${String(hardeningComponent)}'; use 'observability', 'ecs-scaling', 'waf', or 'log-retention'.`,
   );
 }
 
@@ -134,6 +137,20 @@ if (hardeningComponent === "waf") {
   });
 }
 
+if (hardeningComponent === "log-retention") {
+  const retentionDays = allowedRetentionDaysContext();
+
+  new SkyxLogRetentionStack(app, "SkyxLogRetention", {
+    retentionDays,
+    env: {
+      account: skyxProduction.accountId,
+      region: skyxProduction.region,
+    },
+    description:
+      "Import-oriented retention template for existing SkyX ECS log groups; retain log data on removal or replacement.",
+  });
+}
+
 function requiredContext(name: string): string {
   const value = app.node.tryGetContext(name);
   if (typeof value !== "string" || value.trim() === "") {
@@ -163,4 +180,17 @@ function scalingConfig(service: "api" | "frontend"): EcsServiceScalingConfig {
   }
 
   return { minCapacity, maxCapacity, targetCpuUtilization };
+}
+
+function allowedRetentionDaysContext(): number {
+  const value = positiveIntegerContext("retentionDays");
+  const allowed = new Set([
+    1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731,
+    1096, 1827, 2192, 2557, 2922, 3288, 3653, 4018, 4383, 4748, 5113,
+    5478, 5844, 6209, 6574, 6939, 7305,
+  ]);
+  if (!allowed.has(value)) {
+    throw new Error("retentionDays must be an AWS CloudWatch Logs retention value.");
+  }
+  return value;
 }

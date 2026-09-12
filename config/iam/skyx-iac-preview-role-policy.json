@@ -26,7 +26,8 @@
         "arn:aws:cloudformation:us-east-1:129346407469:stack/SkyxEcrAdoption/*",
         "arn:aws:cloudformation:us-east-1:129346407469:stack/SkyxObservability/*",
         "arn:aws:cloudformation:us-east-1:129346407469:stack/SkyxEcsScaling/*",
-        "arn:aws:cloudformation:us-east-1:129346407469:stack/SkyxWaf/*"
+        "arn:aws:cloudformation:us-east-1:129346407469:stack/SkyxWaf/*",
+        "arn:aws:cloudformation:us-east-1:129346407469:stack/SkyxLogRetention/*"
       ]
     }
   ]

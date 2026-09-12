@@ -34,7 +34,7 @@ The current CDK stack emits outputs and has no application resources. The previe
 - `ssm:GetParameter` for the regional CDK bootstrap version parameter;
 - `cloudformation:ListStackResources` only if the preview implementation needs stack resource inspection.
 
-The created `SkyXIacPreviewRole` uses these actions against the exact bootstrap parameter and the `SkyxAdoption`, `SkyxEcrAdoption`, `SkyxObservability`, `SkyxEcsScaling`, and `SkyxWaf` stack ARN patterns. Its versioned policy is [skyx-iac-preview-role-policy.json](../config/iam/skyx-iac-preview-role-policy.json). It has no S3, CloudFormation change-set, IAM, ECS, RDS, Secrets Manager, or `iam:PassRole` permissions. Do not attach blanket `ReadOnlyAccess` by default. If later adoption adds resource lookups, add service-specific read actions only for the resources in that reviewed component.
+The created `SkyXIacPreviewRole` uses these actions against the exact bootstrap parameter and the `SkyxAdoption`, `SkyxEcrAdoption`, `SkyxObservability`, `SkyxEcsScaling`, `SkyxWaf`, and `SkyxLogRetention` stack ARN patterns. Its versioned policy is [skyx-iac-preview-role-policy.json](../config/iam/skyx-iac-preview-role-policy.json). It has no S3, CloudFormation change-set, IAM, ECS, RDS, Secrets Manager, or `iam:PassRole` permissions. Do not attach blanket `ReadOnlyAccess` by default. If later adoption adds resource lookups, add service-specific read actions only for the resources in that reviewed component.
 
 ## Deployment boundary
 
