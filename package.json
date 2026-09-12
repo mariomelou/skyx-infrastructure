@@ -7,7 +7,8 @@
     "build": "tsc --noEmit",
     "synth": "cdk synth",
     "diff": "cdk diff",
-    "test": "npm run build && npm run synth"
+    "test": "npm run build && npm run synth && npm run verify:manifest",
+    "verify:manifest": "node scripts/verify-adoption-manifest.mjs"
   },
   "engines": {
     "node": ">=20 <25",
