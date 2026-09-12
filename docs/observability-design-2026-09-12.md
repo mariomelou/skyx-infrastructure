@@ -39,3 +39,5 @@ npm run verify:observability
 ```
 
 The verifier proves that the synthesized template contains exactly seven alarms, uses one supplied alarm topic per alarm, and creates no SNS, ECS, ALB, or RDS resources. A future deployment still requires a reviewed diff/change set, an approved alarm topic and thresholds, the protected GitHub `production` environment, and explicit approval.
+
+The guarded GitHub validation run `34723414012` passed synthesis and authenticated template diff for this component. Its import and generic deployment jobs were skipped by design.
