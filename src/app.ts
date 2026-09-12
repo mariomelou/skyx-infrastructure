@@ -7,6 +7,10 @@ import {
   type EcrAdoptionRepositoryName,
 } from "./stacks/skyx-ecr-adoption-stack.js";
 import { SkyxObservabilityStack } from "./stacks/skyx-observability-stack.js";
+import {
+  SkyxEcsScalingStack,
+  type EcsServiceScalingConfig,
+} from "./stacks/skyx-ecs-scaling-stack.js";
 
 const app = new cdk.App();
 
@@ -57,9 +61,12 @@ if (adoptionComponent === "ecr") {
   });
 }
 
-if (hardeningComponent !== undefined && hardeningComponent !== "observability") {
+if (
+  hardeningComponent !== undefined &&
+  !["observability", "ecs-scaling"].includes(hardeningComponent)
+) {
   throw new Error(
-    `Unsupported hardeningComponent '${String(hardeningComponent)}'; use 'observability'.`,
+    `Unsupported hardeningComponent '${String(hardeningComponent)}'; use 'observability' or 'ecs-scaling'.`,
   );
 }
 
@@ -93,6 +100,22 @@ if (hardeningComponent === "observability") {
   });
 }
 
+if (hardeningComponent === "ecs-scaling") {
+  const api = scalingConfig("api");
+  const frontend = scalingConfig("frontend");
+
+  new SkyxEcsScalingStack(app, "SkyxEcsScaling", {
+    api,
+    frontend,
+    env: {
+      account: skyxProduction.accountId,
+      region: skyxProduction.region,
+    },
+    description:
+      "Opt-in Application Auto Scaling policies for existing SkyX ECS services; no ECS service ownership is adopted.",
+  });
+}
+
 function requiredContext(name: string): string {
   const value = app.node.tryGetContext(name);
   if (typeof value !== "string" || value.trim() === "") {
@@ -107,4 +130,19 @@ function positiveIntegerContext(name: string): number {
     throw new Error(`Context '${name}' must be a positive integer.`);
   }
   return value;
+}
+
+function scalingConfig(service: "api" | "frontend"): EcsServiceScalingConfig {
+  const minCapacity = positiveIntegerContext(`${service}MinCapacity`);
+  const maxCapacity = positiveIntegerContext(`${service}MaxCapacity`);
+  const targetCpuUtilization = positiveIntegerContext(`${service}TargetCpu`);
+
+  if (maxCapacity < minCapacity) {
+    throw new Error(`${service}MaxCapacity must be greater than or equal to ${service}MinCapacity.`);
+  }
+  if (targetCpuUtilization > 100) {
+    throw new Error(`${service}TargetCpu must be between 1 and 100.`);
+  }
+
+  return { minCapacity, maxCapacity, targetCpuUtilization };
 }

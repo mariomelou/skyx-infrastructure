@@ -10,7 +10,8 @@
     "test": "npm run build && npm run synth && npm run verify:manifest",
     "verify:manifest": "node scripts/verify-adoption-manifest.mjs",
     "verify:ecr": "cdk synth SkyxEcrAdoption -c adoptionComponent=ecr -c ecrRepository=skyx-backend >/dev/null && node scripts/verify-ecr-adoption.mjs",
-    "verify:observability": "cdk synth SkyxObservability -c hardeningComponent=observability -c alarmTopicArn=arn:aws:sns:us-east-1:129346407469:skyx-alerts -c elb5xxThreshold=5 -c rdsConnectionsThreshold=80 >/dev/null && node scripts/verify-observability.mjs"
+    "verify:observability": "cdk synth SkyxObservability -c hardeningComponent=observability -c alarmTopicArn=arn:aws:sns:us-east-1:129346407469:skyx-alerts -c elb5xxThreshold=5 -c rdsConnectionsThreshold=80 >/dev/null && node scripts/verify-observability.mjs",
+    "verify:ecs-scaling": "cdk synth SkyxEcsScaling -c hardeningComponent=ecs-scaling -c apiMinCapacity=1 -c apiMaxCapacity=4 -c apiTargetCpu=60 -c frontendMinCapacity=1 -c frontendMaxCapacity=3 -c frontendTargetCpu=60 >/dev/null && node scripts/verify-ecs-scaling.mjs"
   },
   "engines": {
     "node": ">=20 <25",

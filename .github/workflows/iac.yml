@@ -45,6 +45,7 @@ on:
         options:
           - none
           - observability
+          - ecs-scaling
       alarm_topic_arn:
         description: "Approved same-account SNS topic ARN for observability alarms"
         required: false
@@ -57,6 +58,36 @@ on:
         type: string
       rds_connections_threshold:
         description: "Approved Aurora DatabaseConnections threshold"
+        required: false
+        default: ""
+        type: string
+      api_min_capacity:
+        description: "Approved API ECS minimum capacity"
+        required: false
+        default: ""
+        type: string
+      api_max_capacity:
+        description: "Approved API ECS maximum capacity"
+        required: false
+        default: ""
+        type: string
+      api_target_cpu:
+        description: "Approved API ECS target CPU percentage"
+        required: false
+        default: ""
+        type: string
+      frontend_min_capacity:
+        description: "Approved frontend ECS minimum capacity"
+        required: false
+        default: ""
+        type: string
+      frontend_max_capacity:
+        description: "Approved frontend ECS maximum capacity"
+        required: false
+        default: ""
+        type: string
+      frontend_target_cpu:
+        description: "Approved frontend ECS target CPU percentage"
         required: false
         default: ""
         type: string
@@ -100,20 +131,38 @@ jobs:
           test -n "$RDS_CONNECTIONS_THRESHOLD" || { echo "::error::An approved Aurora connection threshold is required for observability synthesis."; exit 1; }
           npx cdk synth SkyxObservability -c hardeningComponent=observability -c alarmTopicArn="$ALARM_TOPIC_ARN" -c elb5xxThreshold="$ELB5XX_THRESHOLD" -c rdsConnectionsThreshold="$RDS_CONNECTIONS_THRESHOLD"
           node scripts/verify-observability.mjs
+      - name: Synthesize selected ECS scaling component
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.hardening_component == 'ecs-scaling' }}
+        env:
+          API_MIN_CAPACITY: ${{ inputs.api_min_capacity }}
+          API_MAX_CAPACITY: ${{ inputs.api_max_capacity }}
+          API_TARGET_CPU: ${{ inputs.api_target_cpu }}
+          FRONTEND_MIN_CAPACITY: ${{ inputs.frontend_min_capacity }}
+          FRONTEND_MAX_CAPACITY: ${{ inputs.frontend_max_capacity }}
+          FRONTEND_TARGET_CPU: ${{ inputs.frontend_target_cpu }}
+        run: |
+          test -n "$API_MIN_CAPACITY" || { echo "::error::An approved API minimum capacity is required for ECS scaling synthesis."; exit 1; }
+          test -n "$API_MAX_CAPACITY" || { echo "::error::An approved API maximum capacity is required for ECS scaling synthesis."; exit 1; }
+          test -n "$API_TARGET_CPU" || { echo "::error::An approved API CPU target is required for ECS scaling synthesis."; exit 1; }
+          test -n "$FRONTEND_MIN_CAPACITY" || { echo "::error::An approved frontend minimum capacity is required for ECS scaling synthesis."; exit 1; }
+          test -n "$FRONTEND_MAX_CAPACITY" || { echo "::error::An approved frontend maximum capacity is required for ECS scaling synthesis."; exit 1; }
+          test -n "$FRONTEND_TARGET_CPU" || { echo "::error::An approved frontend CPU target is required for ECS scaling synthesis."; exit 1; }
+          npx cdk synth SkyxEcsScaling -c hardeningComponent=ecs-scaling -c apiMinCapacity="$API_MIN_CAPACITY" -c apiMaxCapacity="$API_MAX_CAPACITY" -c apiTargetCpu="$API_TARGET_CPU" -c frontendMinCapacity="$FRONTEND_MIN_CAPACITY" -c frontendMaxCapacity="$FRONTEND_MAX_CAPACITY" -c frontendTargetCpu="$FRONTEND_TARGET_CPU"
+          node scripts/verify-ecs-scaling.mjs
       - name: Reject unimplemented ECR deployment path
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.deploy == true && inputs.adoption_component == 'ecr' }}
         run: |
           echo "::error::ECR adoption execution remains change-set approval-gated and is not wired to the generic deploy job."
           exit 1
       - name: Reject combined opt-in components
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.adoption_component == 'ecr' && inputs.hardening_component == 'observability' }}
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.adoption_component == 'ecr' && inputs.hardening_component != 'none' }}
         run: |
           echo "::error::Select one opt-in component per run; adoption and hardening must be reviewed separately."
           exit 1
-      - name: Reject unimplemented observability deployment path
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.deploy == true && inputs.hardening_component == 'observability' }}
+      - name: Reject unimplemented hardening deployment path
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.deploy == true && inputs.hardening_component != 'none' }}
         run: |
-          echo "::error::Observability remains design-and-change-set approval-gated and is not wired to the generic deploy job."
+          echo "::error::Hardening components remain design-and-change-set approval-gated and are not wired to the generic deploy job."
           exit 1
       - name: Reject conflicting production operations
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.deploy == true && inputs.import == true }}
@@ -169,6 +218,16 @@ jobs:
           ELB5XX_THRESHOLD: ${{ inputs.elb5xx_threshold }}
           RDS_CONNECTIONS_THRESHOLD: ${{ inputs.rds_connections_threshold }}
         run: npx cdk diff SkyxObservability -c hardeningComponent=observability -c alarmTopicArn="$ALARM_TOPIC_ARN" -c elb5xxThreshold="$ELB5XX_THRESHOLD" -c rdsConnectionsThreshold="$RDS_CONNECTIONS_THRESHOLD" --method template
+      - name: Diff selected ECS scaling component
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.hardening_component == 'ecs-scaling' }}
+        env:
+          API_MIN_CAPACITY: ${{ inputs.api_min_capacity }}
+          API_MAX_CAPACITY: ${{ inputs.api_max_capacity }}
+          API_TARGET_CPU: ${{ inputs.api_target_cpu }}
+          FRONTEND_MIN_CAPACITY: ${{ inputs.frontend_min_capacity }}
+          FRONTEND_MAX_CAPACITY: ${{ inputs.frontend_max_capacity }}
+          FRONTEND_TARGET_CPU: ${{ inputs.frontend_target_cpu }}
+        run: npx cdk diff SkyxEcsScaling -c hardeningComponent=ecs-scaling -c apiMinCapacity="$API_MIN_CAPACITY" -c apiMaxCapacity="$API_MAX_CAPACITY" -c apiTargetCpu="$API_TARGET_CPU" -c frontendMinCapacity="$FRONTEND_MIN_CAPACITY" -c frontendMaxCapacity="$FRONTEND_MAX_CAPACITY" -c frontendTargetCpu="$FRONTEND_TARGET_CPU" --method template
 
   import:
     name: execute approved ECR import
