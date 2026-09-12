@@ -24,4 +24,4 @@ No `cdk deploy`, `cdk import`, bootstrap, migration, or production mutation is p
 - `skyx-infrastructure` owns the IaC model, adoption plan, and future infrastructure pipeline.
 - Secret values are never stored here; only observed secret names are documented.
 
-See [docs/inventory-2026-09-12.md](docs/inventory-2026-09-12.md), [docs/adoption-strategy.md](docs/adoption-strategy.md), and [docs/pipeline.md](docs/pipeline.md).
+See [docs/inventory-2026-09-12.md](docs/inventory-2026-09-12.md), [docs/pending-matrix-2026-09-12.md](docs/pending-matrix-2026-09-12.md), [docs/adoption-strategy.md](docs/adoption-strategy.md), and [docs/pipeline.md](docs/pipeline.md).

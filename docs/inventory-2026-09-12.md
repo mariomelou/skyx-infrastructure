@@ -4,7 +4,7 @@ Status: read-only observation. No AWS resources were created, changed, imported,
 
 ## Access and evidence boundary
 
-The inventory was performed in the AWS Console using the existing Chrome session in account `129346407469`, role `AdministratorAccess/mario`, region `us-east-1`. The local AWS CLI SSO token was expired and could not be refreshed, so CLI results were not treated as evidence and no alternate account/profile was used.
+The inventory was performed in the AWS Console using the existing Chrome session in account `129346407469`, role `AdministratorAccess/mario`, region `us-east-1`. A local `skyx` AWS CLI profile now targets that same account and role, but its SSO token is not currently valid; therefore CLI results are not treated as evidence until `sts get-caller-identity` succeeds. The older `default` profile targets account `250879721047` and is not used for SkyX validation.
 
 ## Observed resources
 
