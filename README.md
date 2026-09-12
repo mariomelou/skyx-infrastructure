@@ -25,4 +25,4 @@ npm run diff
 - `skyx-infrastructure` owns the IaC model, adoption plan, and future infrastructure pipeline.
 - Secret values are never stored here; only observed secret names are documented.
 
-See [docs/inventory-2026-09-12.md](docs/inventory-2026-09-12.md), [docs/pending-matrix-2026-09-12.md](docs/pending-matrix-2026-09-12.md), [docs/adoption-strategy.md](docs/adoption-strategy.md), [docs/import-plan-2026-09-12.md](docs/import-plan-2026-09-12.md), [docs/ci-iam-design-2026-09-12.md](docs/ci-iam-design-2026-09-12.md), [docs/cli-validation.md](docs/cli-validation.md), and [docs/pipeline.md](docs/pipeline.md).
+See [docs/inventory-2026-09-12.md](docs/inventory-2026-09-12.md), [docs/pending-matrix-2026-09-12.md](docs/pending-matrix-2026-09-12.md), [docs/adoption-strategy.md](docs/adoption-strategy.md), [docs/import-plan-2026-09-12.md](docs/import-plan-2026-09-12.md), [docs/ci-iam-design-2026-09-12.md](docs/ci-iam-design-2026-09-12.md), [docs/cli-validation.md](docs/cli-validation.md), [docs/completion-audit-2026-09-12.md](docs/completion-audit-2026-09-12.md), and [docs/pipeline.md](docs/pipeline.md).
