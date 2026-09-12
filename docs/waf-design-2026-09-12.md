@@ -22,3 +22,5 @@ npm run verify:waf
 ```
 
 The verifier proves that the template contains exactly one regional COUNT Web ACL, both intended ALB associations, and no logging or ALB ownership. Applying it still requires a reviewed diff/change set, false-positive observation plan, logging decision, maintenance window, protected GitHub environment, and explicit approval.
+
+The guarded GitHub validation run `34723892039` passed synthesis and authenticated template diff for this component. Its import and generic deployment jobs were skipped by design.
