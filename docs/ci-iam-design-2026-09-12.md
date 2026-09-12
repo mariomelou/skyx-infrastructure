@@ -1,6 +1,6 @@
 # IaC CI IAM design — 2026-09-12
 
-This document defines the minimum role boundary for the GitHub Actions workflow. `SkyXIacPreviewRole` has now been created in account `129346407469` with the read-only policy described below; the deploy role, GitHub variable, and protected environment remain unconfigured.
+This document defines the minimum role boundary for the GitHub Actions workflow. `SkyXIacPreviewRole` has now been created in account `129346407469` with the read-only policy described below, and `AWS_IAC_PREVIEW_ROLE_ARN` is configured in the repository; the deploy role and protected environment remain unconfigured.
 
 ## Role separation
 
@@ -57,7 +57,7 @@ The initial CLI session was valid for account `129346407469` as `AWSPowerUserAcc
 ## Activation checklist
 
 1. Confirm the authenticated `cdk diff` and the stack/bootstrap resources it actually reads.
-2. Set the created preview role ARN as `AWS_IAC_PREVIEW_ROLE_ARN` through the approved repository settings process.
+2. Set the created preview role ARN as `AWS_IAC_PREVIEW_ROLE_ARN` through the approved repository settings process. **Done.**
 3. Run the workflow on a same-repository pull request and confirm the caller account is `129346407469`.
 4. Create the deploy role only after the preview diff and import plan are approved.
 5. Configure the protected `production` environment and `AWS_IAC_DEPLOY_ROLE_ARN` secret.
