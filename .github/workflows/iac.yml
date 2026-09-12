@@ -30,13 +30,23 @@ jobs:
         run: npm run build
       - name: Synthesize
         run: npm run synth
+      - name: Require read-only preview role
+        env:
+          PREVIEW_ROLE_ARN: ${{ vars.AWS_IAC_PREVIEW_ROLE_ARN }}
+        run: |
+          if [ -z "$PREVIEW_ROLE_ARN" ]; then
+            echo "::error::Configure the repository variable AWS_IAC_PREVIEW_ROLE_ARN before running the authenticated IaC diff."
+            exit 1
+          fi
       - name: Configure read-only preview credentials
-        if: ${{ vars.AWS_IAC_PREVIEW_ROLE_ARN != '' }}
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ vars.AWS_IAC_PREVIEW_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
           allowed-account-ids: "129346407469"
+      - name: Verify preview account
+        run: |
+          test "$(aws sts get-caller-identity --query Account --output text)" = "129346407469"
       - name: Diff
         run: npm run diff
 
@@ -55,11 +65,22 @@ jobs:
           cache-dependency-path: package-lock.json
       - name: Install
         run: npm ci
+      - name: Require deployment role
+        env:
+          DEPLOY_ROLE_ARN: ${{ secrets.AWS_IAC_DEPLOY_ROLE_ARN }}
+        run: |
+          if [ -z "$DEPLOY_ROLE_ARN" ]; then
+            echo "::error::Configure the production secret AWS_IAC_DEPLOY_ROLE_ARN before running deployment."
+            exit 1
+          fi
       - name: Configure deployment credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_IAC_DEPLOY_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
           allowed-account-ids: "129346407469"
+      - name: Verify deployment account
+        run: |
+          test "$(aws sts get-caller-identity --query Account --output text)" = "129346407469"
       - name: Deploy with approval gate
         run: npx cdk deploy --require-approval broad
