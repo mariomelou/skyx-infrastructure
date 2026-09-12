@@ -5,7 +5,7 @@ The current stack is an adoption manifest, not an ownership claim. This is inten
 ## Phases
 
 1. **Reference-only baseline (complete locally).** Keep immutable IDs, names, ARNs, and observed configuration in typed data. Generate only outputs. Run `npm run build`, `npm run synth`, and `npm run diff`.
-2. **Complete read-only inventory (in progress).** SG rules, route entries, service counts, ECS deployment behavior, listener/rule state, target-group health checks, ALB attributes, alarms, WAF absence, Config state, endpoint placement, and IAM policy/trust documents are recorded. The remaining read-only gap is endpoint-policy detail for resources outside the SkyX VPC.
+2. **Complete read-only inventory (complete for the current bounded scope).** SG rules, route entries, service counts, ECS deployment behavior, listener/rule state, target-group health checks, ALB attributes, alarms, WAF absence, Config state, endpoint placement and policy, and IAM policy/trust documents are recorded. The external Control Tower endpoint is explicitly excluded from SkyX ownership.
 3. **Import design (pending approval).** For each resource, choose one of: retain external ownership, import into a dedicated CloudFormation stack, or model with a CDK reference. Import must be resource-specific and tested against a snapshot. No broad replacement is acceptable.
 4. **Staged ownership (approval required).** Import low-risk supporting resources first, then review `cdk diff` and CloudFormation change sets. Keep database, secrets, Cognito, and live ECS services protected with retain policies and explicit rollback procedures.
 5. **Operational handoff (approval required).** Only after a reviewed import plan and permissions are approved should the IaC pipeline be allowed to deploy.

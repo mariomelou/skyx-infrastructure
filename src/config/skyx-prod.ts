@@ -17,6 +17,17 @@ export const skyxProduction = {
     mainRouteTableId: "rtb-054e90743d9ff91ab",
     natGatewayCount: 0,
     skyxVpcEndpointCount: 0,
+    externalEndpoints: [
+      {
+        id: "vpce-0be79b16f26533b68",
+        type: "Gateway",
+        service: "com.amazonaws.us-east-1.s3",
+        vpcId: "vpc-08afe822bbaef16c8",
+        vpcName: "aws-controltower-VPC",
+        policy: "Allow principal * action * resource *",
+        ownership: "external Control Tower resource; do not import into SkyX",
+      },
+    ],
     securityGroupIds: {
       alb: "sg-0fb59dedab7b7aa9c",
       task: "sg-0d08082390032bcfe",

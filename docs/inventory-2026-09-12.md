@@ -10,7 +10,7 @@ The inventory was performed in the AWS Console using the existing Chrome session
 
 | Area | Observed state |
 | --- | --- |
-| VPC | `skyx-prod-vpc` / `vpc-0118132a0a68f1f8b`, `10.42.0.0/16`; two public and two private subnets; one internet gateway; zero NAT gateways. The only regional endpoint is an S3 gateway endpoint in the separate Control Tower VPC, so SkyX has no VPC endpoint. |
+| VPC | `skyx-prod-vpc` / `vpc-0118132a0a68f1f8b`, `10.42.0.0/16`; two public and two private subnets; one internet gateway; zero NAT gateways. SkyX has no VPC endpoint. The only regional endpoint is S3 gateway `vpce-0be79b16f26533b68` in external `aws-controltower-VPC` / `vpc-08afe822bbaef16c8`, with policy `Allow` for `Principal *`, `Action *`, `Resource *`; it remains outside SkyX ownership. |
 | Security groups | `skyx-prod-alb`: inbound TCP/80 from `0.0.0.0/0`, outbound all IPv4; `skyx-prod-task`: inbound TCP/8000 and TCP/3001 from the ALB SG, outbound all IPv4; `skyx-prod-db`: inbound TCP/5432 from the task SG, outbound all IPv4. |
 | ECS | Cluster `skyx-prod`; services `skyx-api` and `skyx-frontend`; one desired/running Fargate task each; task definitions `skyx-api:4` and `skyx-frontend:1`; availability-zone rebalancing on; auto-assign public IP on; no autoscaling, Service Connect, or service discovery configured. |
 | ECR | `skyx-backend` and `skyx-frontend` repositories; CDK bootstrap asset repository also present. |
@@ -31,4 +31,4 @@ The inventory was performed in the AWS Console using the existing Chrome session
 
 ## Not claimed by this inventory
 
-The following are deliberately `PENDING` or `UNVERIFIED`: endpoint policy details for resources outside the SkyX VPC and the complete resource-by-resource import specification. These require an approved ownership design before adoption is modeled as authoritative.
+The following is deliberately `PENDING` or `UNVERIFIED`: the complete resource-by-resource import specification. This requires an approved ownership design before adoption is modeled as authoritative.
