@@ -4,7 +4,7 @@ This audit reflects the current repository and the read-only AWS Console evidenc
 
 | Goal requirement | Evidence | State |
 | --- | --- | --- |
-| Dedicated CDK project created and versioned | Public repository `mariomelou/skyx-infrastructure`; current `main` is published and clean | PROVADO |
+| Dedicated CDK project created and versioned | Public repository `melou-ai/skyx-infrastructure`; current `main` is published and clean | PROVADO |
 | AWS inventory completed for the bounded scope | Inventory covers VPC, routes, security groups, endpoints, ECS, ECR, ALB/target groups, Aurora, Cognito, IAM, secrets, logs, Config, WAF, ACM, alarms, budgets, and Amplify | PROVADO |
 | Critical resources and dependencies mapped | Typed production manifest plus observed ARNs/IDs, listeners, health checks, roles, policies, and ownership boundaries | PROVADO |
 | Adoption/import strategy defined | `docs/import-plan-2026-09-12.md` defines treatment, sequence, risks, retain/rollback gates, and external ownership | PROVADO as design; no import executed |

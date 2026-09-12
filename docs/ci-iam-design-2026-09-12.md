@@ -4,7 +4,7 @@ This document defines the minimum role boundary for the GitHub Actions workflow.
 
 ## Role separation
 
-Do not reuse `SkyXGitHubActionsEcrRole`: it is an application delivery role with ECR push and ECS migration permissions. Do not reuse `SkyXCodeBuildRole`: it is tied to CodeBuild and has broad managed ECR/CloudWatch policies. IaC preview and deployment need separate roles with an OIDC trust limited to `mariomelou/skyx-infrastructure`.
+Do not reuse `SkyXGitHubActionsEcrRole`: it is an application delivery role with ECR push and ECS migration permissions. Do not reuse `SkyXCodeBuildRole`: it is tied to CodeBuild and has broad managed ECR/CloudWatch policies. IaC preview and deployment need separate roles with an OIDC trust limited to `melou-ai/skyx-infrastructure`.
 
 | Role | Workflow use | Current status |
 | --- | --- | --- |
@@ -16,7 +16,7 @@ Do not reuse `SkyXGitHubActionsEcrRole`: it is an application delivery role with
 Both roles should trust `token.actions.githubusercontent.com` with:
 
 - `aud = sts.amazonaws.com`;
-- repository subjects limited to `repo:mariomelou/skyx-infrastructure:*`;
+- repository subjects limited to `repo:melou-ai/skyx-infrastructure:*`;
 - preview limited to pull requests and the `main` ref;
 - deployment limited to the protected `production` environment and explicitly approved workflow path;
 - account restriction `129346407469` enforced in the workflow through `allowed-account-ids`.

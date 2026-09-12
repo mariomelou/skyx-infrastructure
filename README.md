@@ -2,7 +2,7 @@
 
 This is the third SkyX project: a TypeScript AWS CDK application for gradual infrastructure adoption.
 
-Public repository: https://github.com/mariomelou/skyx-infrastructure
+Public repository: https://github.com/melou-ai/skyx-infrastructure
 
 The first commit is intentionally a non-owning adoption manifest. It records the observed production resource identities as CloudFormation outputs, but it does not declare new VPCs, load balancers, ECS services, task definitions, databases, user pools, secrets, or IAM roles. Synthesizing or diffing it therefore cannot recreate the existing application infrastructure.
 
