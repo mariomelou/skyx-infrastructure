@@ -14,14 +14,13 @@ The role is for CloudFormation change-set preparation and execution for that sta
 | --- | --- | --- |
 | `sts:GetCallerIdentity` | `*` | Verify the account in the workflow |
 | `cloudformation:ValidateTemplate` | `*` | Validate the reviewed template |
-| `cloudformation:CreateStack` | `*` | Allow creation of the dedicated adoption stack only when the reviewed import path requires it; the workflow must enforce the approved stack name |
 | `cloudformation:DescribeStacks`, `DescribeStackEvents`, `GetTemplate`, `ListStackResources`, `ListChangeSets` | `arn:aws:cloudformation:us-east-1:129346407469:stack/SkyxEcrAdoption/*` | Inspect the dedicated adoption stack |
 | `cloudformation:CreateChangeSet`, `DescribeChangeSet`, `ExecuteChangeSet`, `DeleteChangeSet` | `arn:aws:cloudformation:us-east-1:129346407469:stack/SkyxEcrAdoption/*` | Prepare, review, execute, or remove the exact approved change set |
 | `ssm:GetParameter` | `arn:aws:ssm:us-east-1:129346407469:parameter/cdk-bootstrap/hnb659fds/version` | Read the CDK bootstrap version |
 
-The versioned policy used for the role is [skyx-iac-deploy-role-policy.json](../config/iam/skyx-iac-deploy-role-policy.json), and its OIDC trust is [skyx-iac-deploy-role-trust.json](../config/iam/skyx-iac-deploy-role-trust.json). The policy adds only readback actions for the selected `skyx-backend` repository and constrains CloudFormation requests to the ECR resource type, `us-east-1`, the `SkyxEcrAdoption` stack, and `skyx-ecr-*` change sets.
+The versioned policy used for the role is [skyx-iac-deploy-role-policy.json](../config/iam/skyx-iac-deploy-role-policy.json), and its OIDC trust is [skyx-iac-deploy-role-trust.json](../config/iam/skyx-iac-deploy-role-trust.json). The policy adds only readback actions for the selected `skyx-backend` repository and constrains CloudFormation requests to the ECR resource type, `us-east-1`, the `SkyxEcrAdoption` stack, and `skyx-ecr-*` change sets. It intentionally omits `CreateStack` and `UpdateStack`; the already prepared review stack and its approved import change set are the only first-wave execution boundary.
 
-`CreateStack` is the one action whose resource scope may require `*` in IAM. If the selected import mechanism does not need it, omit it. The workflow and change-set review remain the control that restricts the operation to `SkyxEcrAdoption`; no other CloudFormation stack should be targeted.
+If a later component needs stack creation or update, add those actions only in a separately reviewed policy revision; they are not part of the first-wave import role. The workflow and change-set review remain the control that restricts the operation to `SkyxEcrAdoption`; no other CloudFormation stack should be targeted.
 
 No S3 asset permissions are proposed because the ECR component is intended to contain no file assets. If a later CDK implementation synthesizes an asset, add only the exact bootstrap bucket/object actions after inspecting the synthesized template; do not attach broad S3 access preemptively.
 

@@ -65,23 +65,6 @@
       }
     },
     {
-      "Sid": "UpdateOnlyEcrAdoptionStack",
-      "Effect": "Allow",
-      "Action": [
-        "cloudformation:CreateStack",
-        "cloudformation:UpdateStack"
-      ],
-      "Resource": "arn:aws:cloudformation:us-east-1:129346407469:stack/SkyxEcrAdoption/*",
-      "Condition": {
-        "StringEquals": {
-          "aws:RequestedRegion": "us-east-1"
-        },
-        "ForAllValues:StringEquals": {
-          "cloudformation:ResourceTypes": "AWS::ECR::Repository"
-        }
-      }
-    },
-    {
       "Sid": "ExecuteNamedEcrChangeSets",
       "Effect": "Allow",
       "Action": [
