@@ -36,6 +36,7 @@ jobs:
         with:
           role-to-assume: ${{ vars.AWS_IAC_PREVIEW_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
+          allowed-account-ids: "129346407469"
       - name: Diff
         run: npm run diff
 
@@ -59,5 +60,6 @@ jobs:
         with:
           role-to-assume: ${{ secrets.AWS_IAC_DEPLOY_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
+          allowed-account-ids: "129346407469"
       - name: Deploy with approval gate
         run: npx cdk deploy --require-approval broad
