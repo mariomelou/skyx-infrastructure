@@ -8,7 +8,7 @@ Do not reuse `SkyXGitHubActionsEcrRole`: it is an application delivery role with
 
 | Role | Workflow use | Current status |
 | --- | --- | --- |
-| `SkyXIacPreviewRole` | PR/main synth-and-diff preview | Created with the read-only policy below; configure as repository variable `AWS_IAC_PREVIEW_ROLE_ARN` after review |
+| `SkyXIacPreviewRole` | PR/main synth-and-diff preview | Created with the read-only policy below; repository variable `AWS_IAC_PREVIEW_ROLE_ARN` is configured |
 | `SkyXIacDeployRole` | Manual production workflow after protected-environment approval | Created with the versioned first-wave policy; configure as environment secret `AWS_IAC_DEPLOY_ROLE_ARN` after GitHub admin configures `production` |
 
 ## Trust boundary
@@ -23,7 +23,7 @@ Both roles should trust `token.actions.githubusercontent.com` with:
 
 The repository uses GitHub's immutable OIDC subject format. The preview role therefore also allows the exact subjects `repo:melou-ai@264860045/skyx-infrastructure@1367627542:pull_request` and `repo:melou-ai@264860045/skyx-infrastructure@1367627542:ref:refs/heads/main`, alongside the legacy name-based subjects for transition compatibility.
 
-The exact trust document must be reviewed against the GitHub OIDC subject emitted by the chosen event before creating either role. Fork pull requests must not receive AWS credentials.
+The exact trust documents were reviewed against the repository's immutable OIDC identifiers before creating the roles. Fork pull requests must not receive AWS credentials; future trust changes require the same review.
 
 ## Permission boundary for the current reference-only manifest
 
