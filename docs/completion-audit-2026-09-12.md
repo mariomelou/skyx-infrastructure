@@ -16,7 +16,7 @@ This audit reflects the current repository and the read-only AWS Console evidenc
 | Application, database, auth, network, observability, and deploy boundaries documented | Inventory, pending matrix, adoption strategy, import plan, hardening plan, pipeline, and CLI runbook | PROVADO as documentation |
 | Migrations remain backend-owned | No migration command is present in IaC workflow or manifest; boundary is documented | PROVADO |
 | Production safety preserved | No application deploy, ECR import, image change, application-role change, endpoint change, WAF/TLS change, alarm change, or database mutation was executed. The deploy role and an unexecuted ECR import change set were created; the CloudFormation stack is only `REVIEW_IN_PROGRESS`. The earlier change-set diff published its generated template asset to existing CDK bootstrap storage. | PROVADO for application-resource safety; role/change-set preparation recorded |
-| Required approvals identified | Hardening, CI role activation, CloudFormation adoption, and production ownership changes are explicitly gated | PROVADO |
+| Required approvals identified | Hardening, CI role activation, CloudFormation adoption, and production ownership changes are explicitly gated; GitHub environment activation is recorded as `BLOQUEADO` for the current non-admin token and `PENDENTE` overall | PROVADO |
 
 ## Current exit condition
 
