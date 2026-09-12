@@ -42,6 +42,8 @@ The component must not declare ECS services, task definitions, IAM application r
 
 The opt-in template was synthesized for `skyx-backend`. Change set `skyx-ecr-backend-import-20260912` is `CREATE_COMPLETE` with action `Import` for exactly one `AWS::ECR::Repository` resource (`Repository` -> `skyx-backend`), no replacement, and no scope details. The stack is currently `REVIEW_IN_PROGRESS`; the change set has not been executed. The current state therefore remains pending explicit approval for execution.
 
+The exact execution gate and approval text are recorded in [approval-packet-ecr-2026-09-12.md](approval-packet-ecr-2026-09-12.md).
+
 ## Rollback boundary
 
 If the change set contains anything beyond the intended import, stop and delete the unexecuted change set. If an approved import has already executed, preserve the repository with `Retain` and remove only CloudFormation ownership through an explicitly reviewed procedure; never delete the repository or images as rollback.
