@@ -70,6 +70,16 @@ export const skyxProduction = {
       ruleCount: 1,
       ruleConditions: "default rule; no conditions",
       targetGroupStickiness: false,
+      healthCheck: {
+        protocol: "HTTP",
+        path: "/health/live",
+        port: "traffic-port",
+        healthyThreshold: 5,
+        unhealthyThreshold: 2,
+        timeoutSeconds: 5,
+        intervalSeconds: 30,
+        successCodes: "200",
+      },
       responseHeaders: "none",
       serverHeader: true,
       attributes: {
@@ -105,6 +115,16 @@ export const skyxProduction = {
       ruleCount: 1,
       ruleConditions: "default rule; no conditions",
       targetGroupStickiness: false,
+      healthCheck: {
+        protocol: "HTTP",
+        path: "/sign-in",
+        port: "traffic-port",
+        healthyThreshold: 5,
+        unhealthyThreshold: 2,
+        timeoutSeconds: 5,
+        intervalSeconds: 30,
+        successCodes: "200",
+      },
       responseHeaders: "none",
       serverHeader: true,
       attributes: {
