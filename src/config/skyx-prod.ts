@@ -1,0 +1,93 @@
+export const skyxProduction = {
+  accountId: "129346407469",
+  region: "us-east-1",
+  vpc: {
+    id: "vpc-0118132a0a68f1f8b",
+    cidr: "10.42.0.0/16",
+    publicSubnetIds: [
+      "subnet-042eb9e7a021e2d63",
+      "subnet-02158e7027fc2fe61",
+    ],
+    privateSubnetIds: [
+      "subnet-0d1bd575ca1de7c76",
+      "subnet-05bac08a52afb3bbb",
+    ],
+    internetGatewayId: "igw-006aff6fae065b876",
+    publicRouteTableId: "rtb-04e64702680756bd4",
+    mainRouteTableId: "rtb-054e90743d9ff91ab",
+    natGatewayCount: 0,
+    securityGroupIds: {
+      alb: "sg-0fb59dedab7b7aa9c",
+      task: "sg-0d08082390032bcfe",
+      database: "sg-08dfa784deaaf3a4e",
+    },
+  },
+  ecs: {
+    clusterName: "skyx-prod",
+    api: {
+      serviceName: "skyx-api",
+      serviceArn:
+        "arn:aws:ecs:us-east-1:129346407469:service/skyx-prod/skyx-api",
+      taskDefinition: "skyx-api:4",
+      containerPort: 8000,
+      imageRepository: "skyx-backend",
+      logGroup: "/ecs/skyx-api",
+    },
+    frontend: {
+      serviceName: "skyx-frontend",
+      serviceArn:
+        "arn:aws:ecs:us-east-1:129346407469:service/skyx-prod/skyx-frontend",
+      taskDefinition: "skyx-frontend:1",
+      containerPort: 3001,
+      imageRepository: "skyx-frontend",
+      logGroup: "/ecs/skyx-frontend",
+    },
+    taskExecutionRoleName: "SkyXEcsTaskExecutionRole",
+  },
+  loadBalancers: {
+    api: {
+      name: "skyx-prod-alb",
+      arn: "arn:aws:elasticloadbalancing:us-east-1:129346407469:loadbalancer/app/skyx-prod-alb/daa606ab7cfc22fc",
+      targetGroupName: "skyx-prod-api",
+      targetGroupArn:
+        "arn:aws:elasticloadbalancing:us-east-1:129346407469:targetgroup/skyx-prod-api/b07e0985d7d24599",
+    },
+    frontend: {
+      name: "skyx-prod-frontend-alb",
+      arn: "arn:aws:elasticloadbalancing:us-east-1:129346407469:loadbalancer/app/skyx-prod-frontend/7841fca276b64cd7",
+      targetGroupName: "skyx-prod-frontend",
+      targetGroupArn:
+        "arn:aws:elasticloadbalancing:us-east-1:129346407469:targetgroup/skyx-prod-frontend/dba8ae93ab308987",
+    },
+  },
+  database: {
+    clusterIdentifier: "skyx-prod-db",
+    clusterArn: "arn:aws:rds:us-east-1:129346407469:cluster:skyx-prod-db",
+    engine: "aurora-postgresql",
+    engineVersion: "17.7",
+    port: 5432,
+    deletionProtection: false,
+    backupRetentionDays: 7,
+    encryptionKeyAlias: "alias/aws/rds",
+  },
+  identity: {
+    userPoolId: "us-east-1_wiOmAOPbu",
+    userPoolArn:
+      "arn:aws:cognito-idp:us-east-1:129346407469:userpool/us-east-1_wiOmAOPbu",
+    appClientId: "6vouk7sil2f8ohbo7maah044n2",
+  },
+  repositories: {
+    backend: "skyx-backend",
+    frontend: "skyx-frontend",
+  },
+  secrets: [
+    "skyx/prod/frontend-auth-cookie-secret",
+    "skyx/prod/cursor-secret",
+    "skyx/prod/scope-token-secret",
+    "skyx/prod/local-jwt-secret",
+    "skyx/prod/database-ingest-url",
+    "skyx/prod/database-app-url",
+    "skyx/prod/database-admin-url",
+  ],
+} as const;
+

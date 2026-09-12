@@ -1,0 +1,69 @@
+name: infrastructure
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  AWS_REGION: us-east-1
+
+jobs:
+  validate:
+    name: synth and diff
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: skyx-infrastructure/package-lock.json
+      - name: Install
+        working-directory: skyx-infrastructure
+        run: npm ci
+      - name: Type-check
+        working-directory: skyx-infrastructure
+        run: npm run build
+      - name: Synthesize
+        working-directory: skyx-infrastructure
+        run: npm run synth
+      - name: Configure read-only preview credentials
+        if: ${{ vars.AWS_IAC_PREVIEW_ROLE_ARN != '' }}
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_IAC_PREVIEW_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+      - name: Diff
+        working-directory: skyx-infrastructure
+        run: npm run diff
+
+  deploy:
+    name: approved production deployment
+    if: ${{ github.event_name == 'workflow_dispatch' }}
+    needs: validate
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: skyx-infrastructure/package-lock.json
+      - name: Install
+        working-directory: skyx-infrastructure
+        run: npm ci
+      - name: Configure deployment credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_IAC_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+      - name: Deploy with approval gate
+        working-directory: skyx-infrastructure
+        run: npx cdk deploy --require-approval broad

@@ -1,0 +1,13 @@
+# IaC pipeline
+
+The infrastructure pipeline is separate from the frontend and backend image pipelines. The backend workflow continues to own its ECS rollout and migration command; this pipeline must not duplicate either operation.
+
+## Proposed workflow
+
+- Pull requests: install with the lockfile, type-check, synthesize, and produce a reviewed `cdk diff` using a read-only preview role.
+- Main branch: repeat validation and publish the synthesized CloudFormation artifact.
+- Manual production run: require a protected GitHub environment and an approved deployment role; run `cdk diff` again, then `cdk deploy --require-approval broad` only after the change set is reviewed.
+- Import work: never run automatically. Use an explicit operator workflow with resource-by-resource approval and a rollback record.
+
+The workflow in `.github/workflows/iac.yml` intentionally expects `AWS_IAC_PREVIEW_ROLE_ARN` and `AWS_IAC_DEPLOY_ROLE_ARN` to be configured later. No IAM role or GitHub environment was created during this task.
+

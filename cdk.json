@@ -1,0 +1,8 @@
+{
+  "app": "npx tsx src/app.ts",
+  "context": {
+    "@aws-cdk/core:enablePathMetadata": false,
+    "@aws-cdk/core:stackRelativeExports": true
+  }
+}
+
