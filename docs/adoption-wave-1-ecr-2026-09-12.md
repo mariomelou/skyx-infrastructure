@@ -31,7 +31,7 @@ The component must not declare ECS services, task definitions, IAM application r
 ## Required evidence before import
 
 1. Capture a fresh `describe-repositories`, lifecycle-policy, repository-policy, and tags snapshot for the selected repository.
-2. Synthesize only the opt-in ECR component and inspect the template for exact properties and retain policies.
+2. Synthesize only the opt-in ECR component and run `npm run verify:ecr`; inspect the template for exact properties and retain policies.
 3. Run an authenticated template diff and confirm that the reference-only stack remains unchanged.
 4. Generate an import change set for the exact repository ARN; do not execute it yet.
 5. Confirm the change set contains an import only, with no replacement, deletion, image mutation, policy addition, or lifecycle-policy change.
