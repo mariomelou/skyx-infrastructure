@@ -37,6 +37,29 @@ on:
         options:
           - skyx-backend
           - skyx-frontend
+      hardening_component:
+        description: "Optional hardening component to synthesize during a manual run"
+        required: true
+        default: none
+        type: choice
+        options:
+          - none
+          - observability
+      alarm_topic_arn:
+        description: "Approved same-account SNS topic ARN for observability alarms"
+        required: false
+        default: ""
+        type: string
+      elb5xx_threshold:
+        description: "Approved five-minute ALB 5XX threshold"
+        required: false
+        default: ""
+        type: string
+      rds_connections_threshold:
+        description: "Approved Aurora DatabaseConnections threshold"
+        required: false
+        default: ""
+        type: string
 
 permissions:
   contents: read
@@ -65,10 +88,32 @@ jobs:
       - name: Synthesize selected ECR adoption component
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.adoption_component == 'ecr' }}
         run: npx cdk synth SkyxEcrAdoption -c adoptionComponent=ecr -c ecrRepository=${{ inputs.ecr_repository }}
+      - name: Synthesize selected observability component
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.hardening_component == 'observability' }}
+        env:
+          ALARM_TOPIC_ARN: ${{ inputs.alarm_topic_arn }}
+          ELB5XX_THRESHOLD: ${{ inputs.elb5xx_threshold }}
+          RDS_CONNECTIONS_THRESHOLD: ${{ inputs.rds_connections_threshold }}
+        run: |
+          test -n "$ALARM_TOPIC_ARN" || { echo "::error::An approved alarm topic ARN is required for observability synthesis."; exit 1; }
+          test -n "$ELB5XX_THRESHOLD" || { echo "::error::An approved ALB 5XX threshold is required for observability synthesis."; exit 1; }
+          test -n "$RDS_CONNECTIONS_THRESHOLD" || { echo "::error::An approved Aurora connection threshold is required for observability synthesis."; exit 1; }
+          npx cdk synth SkyxObservability -c hardeningComponent=observability -c alarmTopicArn="$ALARM_TOPIC_ARN" -c elb5xxThreshold="$ELB5XX_THRESHOLD" -c rdsConnectionsThreshold="$RDS_CONNECTIONS_THRESHOLD"
+          node scripts/verify-observability.mjs
       - name: Reject unimplemented ECR deployment path
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.deploy == true && inputs.adoption_component == 'ecr' }}
         run: |
           echo "::error::ECR adoption execution remains change-set approval-gated and is not wired to the generic deploy job."
+          exit 1
+      - name: Reject combined opt-in components
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.adoption_component == 'ecr' && inputs.hardening_component == 'observability' }}
+        run: |
+          echo "::error::Select one opt-in component per run; adoption and hardening must be reviewed separately."
+          exit 1
+      - name: Reject unimplemented observability deployment path
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.deploy == true && inputs.hardening_component == 'observability' }}
+        run: |
+          echo "::error::Observability remains design-and-change-set approval-gated and is not wired to the generic deploy job."
           exit 1
       - name: Reject conflicting production operations
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.deploy == true && inputs.import == true }}
@@ -82,7 +127,9 @@ jobs:
           ADOPTION_COMPONENT: ${{ inputs.adoption_component }}
           ECR_REPOSITORY: ${{ inputs.ecr_repository }}
           CHANGE_SET_ARN: ${{ inputs.change_set_arn }}
+          HARDENING_COMPONENT: ${{ inputs.hardening_component }}
         run: |
+          test "$HARDENING_COMPONENT" = "none" || { echo "::error::Do not combine ECR import with a hardening component."; exit 1; }
           test "$IMPORT_ENABLED" = "true" || { echo "::error::A repository administrator must enable AWS_IAC_IMPORT_ENABLED before any import job can run."; exit 1; }
           test "$ADOPTION_COMPONENT" = "ecr" || { echo "::error::Imports are limited to the ECR component."; exit 1; }
           test "$ECR_REPOSITORY" = "skyx-backend" || { echo "::error::The first approved import is limited to skyx-backend."; exit 1; }
@@ -115,6 +162,13 @@ jobs:
       - name: Diff selected ECR adoption component
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.adoption_component == 'ecr' }}
         run: npx cdk diff SkyxEcrAdoption -c adoptionComponent=ecr -c ecrRepository=${{ inputs.ecr_repository }} --method template
+      - name: Diff selected observability component
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.hardening_component == 'observability' }}
+        env:
+          ALARM_TOPIC_ARN: ${{ inputs.alarm_topic_arn }}
+          ELB5XX_THRESHOLD: ${{ inputs.elb5xx_threshold }}
+          RDS_CONNECTIONS_THRESHOLD: ${{ inputs.rds_connections_threshold }}
+        run: npx cdk diff SkyxObservability -c hardeningComponent=observability -c alarmTopicArn="$ALARM_TOPIC_ARN" -c elb5xxThreshold="$ELB5XX_THRESHOLD" -c rdsConnectionsThreshold="$RDS_CONNECTIONS_THRESHOLD" --method template
 
   import:
     name: execute approved ECR import

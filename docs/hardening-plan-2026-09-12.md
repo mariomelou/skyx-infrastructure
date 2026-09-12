@@ -28,4 +28,4 @@ Status: design and approval matrix only. No hardening change in this document ha
 
 ## Current conclusion
 
-The hardening requirements are now designed and explicitly separated from adoption. All rows remain pending or approval-gated except the read-only inventory evidence and the decision to preserve Control Tower ownership. No TLS, WAF, network, ECS, alarm, Config, log-retention, Aurora, IAM-application, or listener mutation is authorized by this document.
+The hardening requirements are now designed and explicitly separated from adoption. The first safe implementation slice is the opt-in `SkyxObservability` component documented in `docs/observability-design-2026-09-12.md`; it synthesizes seven alarms but does not create or adopt SNS, ECS, ALB, or Aurora resources. All production rows remain pending or approval-gated except the read-only inventory evidence and the decision to preserve Control Tower ownership. No TLS, WAF, network, ECS, alarm, Config, log-retention, Aurora, IAM-application, or listener mutation is authorized by this document without its own reviewed diff and explicit approval.
