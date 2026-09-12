@@ -16,6 +16,7 @@ export const skyxProduction = {
     publicRouteTableId: "rtb-04e64702680756bd4",
     mainRouteTableId: "rtb-054e90743d9ff91ab",
     natGatewayCount: 0,
+    skyxVpcEndpointCount: 0,
     securityGroupIds: {
       alb: "sg-0fb59dedab7b7aa9c",
       task: "sg-0d08082390032bcfe",
@@ -43,6 +44,12 @@ export const skyxProduction = {
       logGroup: "/ecs/skyx-frontend",
     },
     taskExecutionRoleName: "SkyXEcsTaskExecutionRole",
+    desiredCount: 1,
+    autoscaling: false,
+    serviceConnect: false,
+    serviceDiscovery: false,
+    availabilityZoneRebalancing: true,
+    autoAssignPublicIp: true,
   },
   loadBalancers: {
     api: {
@@ -51,6 +58,8 @@ export const skyxProduction = {
       targetGroupName: "skyx-prod-api",
       targetGroupArn:
         "arn:aws:elasticloadbalancing:us-east-1:129346407469:targetgroup/skyx-prod-api/b07e0985d7d24599",
+      listener: "HTTP:80",
+      ruleCount: 1,
     },
     frontend: {
       name: "skyx-prod-frontend-alb",
@@ -58,6 +67,8 @@ export const skyxProduction = {
       targetGroupName: "skyx-prod-frontend",
       targetGroupArn:
         "arn:aws:elasticloadbalancing:us-east-1:129346407469:targetgroup/skyx-prod-frontend/dba8ae93ab308987",
+      listener: "HTTP:80",
+      ruleCount: 1,
     },
   },
   database: {
@@ -90,4 +101,3 @@ export const skyxProduction = {
     "skyx/prod/database-admin-url",
   ],
 } as const;
-
