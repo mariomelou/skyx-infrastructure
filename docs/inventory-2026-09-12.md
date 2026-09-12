@@ -1,10 +1,10 @@
 # SkyX production inventory — 2026-09-12
 
-Status: read-only observation. No AWS resources were created, changed, imported, deleted, or deployed by this project.
+Status: bounded read-only observation plus authenticated CDK diff. No SkyX application resources were created, changed, imported, deleted, or deployed by this project. The authenticated diff published its generated template asset to existing CDK bootstrap storage; it did not create the `SkyxAdoption` stack or any application resource.
 
 ## Access and evidence boundary
 
-The inventory was performed in the AWS Console using the existing Chrome session in account `129346407469`, role `AdministratorAccess/mario`, region `us-east-1`. A local `skyx` AWS CLI profile now targets that same account and role, but its SSO token is not currently valid; therefore CLI results are not treated as evidence until `sts get-caller-identity` succeeds. The older `default` profile targets account `250879721047` and is not used for SkyX validation.
+The inventory was performed in the AWS Console using the existing Chrome session in the **Mario Melo Studio** profile, account `129346407469`, role `AWSPowerUserAccess/mario`, region `us-east-1`. The `skyx` AWS CLI profile now targets that same account and role: `sts get-caller-identity` succeeded and the authenticated `cdk diff` completed with no application-resource changes, replacements, or deletions. The access portal used was `https://d-9066763dce.awsapps.com/start`; the older `default` profile targets account `250879721047` and is not used for SkyX validation.
 
 ## Observed resources
 
