@@ -24,7 +24,7 @@ The returned `Account` must be exactly `129346407469`, and the assumed role shou
 
 ```bash
 npm test
-npm run diff -- --profile skyx
+npm run diff -- --profile skyx --method template
 ```
 
-`npm test` is local-only (type-check, synth, and the read-only manifest invariant check). The CDK diff is the AWS-dependent gate and must be reviewed for replacements, deletions, imports, or unexpected changes before any future ownership work. An authenticated diff may publish its generated template asset to existing CDK bootstrap storage; it must not create the adoption stack or application resources.
+`npm test` is local-only (type-check, synth, and the read-only manifest invariant check). The template-mode CDK diff is the AWS-dependent preview gate and must be reviewed for unexpected resources or changes before any future ownership work; it does not create a change set or publish a bootstrap asset. Use change-set mode only as a separately approved operator step when replacement analysis is required.

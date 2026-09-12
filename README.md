@@ -16,7 +16,7 @@ npm run synth
 npm run diff
 ```
 
-`npm test` runs type-checking, synthesis, and the read-only manifest invariant check. No `cdk deploy`, `cdk import`, bootstrap, migration, or production mutation is part of local validation. Any future ownership change requires a reviewed diff and explicit approval.
+`npm test` runs type-checking, synthesis, and the read-only manifest invariant check. No `cdk deploy`, `cdk import`, bootstrap, migration, or application production mutation is part of local validation. A dedicated read-only GitHub OIDC preview role was explicitly created for the future pipeline; no application role or ownership change is implied. Any future ownership change requires a reviewed diff and explicit approval.
 
 ## Current boundary
 

@@ -31,6 +31,7 @@ jobs:
       - name: Synthesize
         run: npm run synth
       - name: Require read-only preview role
+        if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
         env:
           PREVIEW_ROLE_ARN: ${{ vars.AWS_IAC_PREVIEW_ROLE_ARN }}
         run: |
@@ -39,20 +40,26 @@ jobs:
             exit 1
           fi
       - name: Configure read-only preview credentials
+        if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ vars.AWS_IAC_PREVIEW_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
           allowed-account-ids: "129346407469"
       - name: Verify preview account
+        if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
         run: |
           test "$(aws sts get-caller-identity --query Account --output text)" = "129346407469"
+      - name: Explain fork preview limitation
+        if: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository }}
+        run: echo "Skipping AWS diff for a fork pull request; synthesis remains available without AWS credentials."
       - name: Diff
-        run: npm run diff
+        if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
+        run: npm run diff -- --method template
 
   deploy:
     name: approved production deployment
-    if: ${{ github.event_name == 'workflow_dispatch' }}
+    if: ${{ github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' }}
     needs: validate
     runs-on: ubuntu-latest
     environment: production
