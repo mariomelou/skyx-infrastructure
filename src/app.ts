@@ -11,6 +11,7 @@ import {
   SkyxEcsScalingStack,
   type EcsServiceScalingConfig,
 } from "./stacks/skyx-ecs-scaling-stack.js";
+import { SkyxWafStack } from "./stacks/skyx-waf-stack.js";
 
 const app = new cdk.App();
 
@@ -63,10 +64,10 @@ if (adoptionComponent === "ecr") {
 
 if (
   hardeningComponent !== undefined &&
-  !["observability", "ecs-scaling"].includes(hardeningComponent)
+  !["observability", "ecs-scaling", "waf"].includes(hardeningComponent)
 ) {
   throw new Error(
-    `Unsupported hardeningComponent '${String(hardeningComponent)}'; use 'observability' or 'ecs-scaling'.`,
+    `Unsupported hardeningComponent '${String(hardeningComponent)}'; use 'observability', 'ecs-scaling', or 'waf'.`,
   );
 }
 
@@ -113,6 +114,23 @@ if (hardeningComponent === "ecs-scaling") {
     },
     description:
       "Opt-in Application Auto Scaling policies for existing SkyX ECS services; no ECS service ownership is adopted.",
+  });
+}
+
+if (hardeningComponent === "waf") {
+  const mode = requiredContext("wafMode");
+  if (mode !== "count") {
+    throw new Error("wafMode must be 'count'; blocking mode requires a separate reviewed component.");
+  }
+
+  new SkyxWafStack(app, "SkyxWaf", {
+    mode: "count",
+    env: {
+      account: skyxProduction.accountId,
+      region: skyxProduction.region,
+    },
+    description:
+      "Opt-in regional WAF COUNT observation for existing SkyX ALBs; no traffic blocking or logging ownership.",
   });
 }
 
