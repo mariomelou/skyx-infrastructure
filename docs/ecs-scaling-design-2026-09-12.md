@@ -35,3 +35,5 @@ npm run verify:ecs-scaling
 ```
 
 The verifier proves that only two scalable targets and two CPU policies are synthesized. Applying them still requires a reviewed diff/change set, capacity/load/budget approval, the protected GitHub `production` environment, and explicit approval.
+
+The guarded GitHub validation run `34723695223` passed synthesis and authenticated template diff for this component. Its import and generic deployment jobs were skipped by design.
