@@ -5,6 +5,12 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      deploy:
+        description: "Enable the separately approved production deployment job"
+        required: true
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -59,7 +65,7 @@ jobs:
 
   deploy:
     name: approved production deployment
-    if: ${{ github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' }}
+    if: ${{ github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && inputs.deploy == true }}
     needs: validate
     runs-on: ubuntu-latest
     environment: production
