@@ -61,8 +61,10 @@ export class SkyxEcsScalingStack extends cdk.Stack {
         serviceNamespace: "ecs",
       },
     );
+    scalableTarget.cfnOptions.deletionPolicy = cdk.CfnDeletionPolicy.RETAIN;
+    scalableTarget.cfnOptions.updateReplacePolicy = cdk.CfnDeletionPolicy.RETAIN;
 
-    new appscaling.CfnScalingPolicy(this, `${prefix}CpuScalingPolicy`, {
+    const scalingPolicy = new appscaling.CfnScalingPolicy(this, `${prefix}CpuScalingPolicy`, {
       policyName:
         serviceName === "skyx-api" ? "skyx-api-cpu-60" : "skyx-frontend-cpu-60",
       policyType: "TargetTrackingScaling",
@@ -77,5 +79,7 @@ export class SkyxEcsScalingStack extends cdk.Stack {
         targetValue: config.targetCpuUtilization,
       },
     });
+    scalingPolicy.cfnOptions.deletionPolicy = cdk.CfnDeletionPolicy.RETAIN;
+    scalingPolicy.cfnOptions.updateReplacePolicy = cdk.CfnDeletionPolicy.RETAIN;
   }
 }

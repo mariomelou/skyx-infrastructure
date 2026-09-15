@@ -117,7 +117,7 @@ export const skyxProduction = {
     },
     frontend: {
       name: "skyx-prod-frontend-alb",
-      arn: "arn:aws:elasticloadbalancing:us-east-1:129346407469:loadbalancer/app/skyx-prod-frontend/7841fca276b64cd7",
+      arn: "arn:aws:elasticloadbalancing:us-east-1:129346407469:loadbalancer/app/skyx-prod-frontend-alb/7841fca276b64cd7",
       targetGroupName: "skyx-prod-frontend",
       targetGroupArn:
         "arn:aws:elasticloadbalancing:us-east-1:129346407469:targetgroup/skyx-prod-frontend/dba8ae93ab308987",

@@ -131,12 +131,14 @@ if (hardeningComponent === "ecs-scaling") {
 
 if (hardeningComponent === "waf") {
   const mode = requiredContext("wafMode");
+  const wafImportPhase = app.node.tryGetContext("wafImportPhase");
   if (mode !== "count") {
     throw new Error("wafMode must be 'count'; blocking mode requires a separate reviewed component.");
   }
 
   new SkyxWafStack(app, "SkyxWaf", {
     mode: "count",
+    includeAssociations: wafImportPhase !== "acl",
     env: {
       account: skyxProduction.accountId,
       region: skyxProduction.region,

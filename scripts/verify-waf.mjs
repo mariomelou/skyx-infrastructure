@@ -39,6 +39,7 @@ if (
 for (const rule of webAcl.Rules) {
   if (
     rule.OverrideAction?.Count === undefined ||
+    rule.Name !== `AWS-${rule.Statement.ManagedRuleGroupStatement.Name}` ||
     rule.Statement?.ManagedRuleGroupStatement?.VendorName !== "AWS" ||
     !/^AWSManagedRules(CommonRuleSet|KnownBadInputsRuleSet)$/.test(
       rule.Statement.ManagedRuleGroupStatement.Name,
@@ -63,7 +64,7 @@ const associationArns = new Set(
 );
 for (const arn of [
   "arn:aws:elasticloadbalancing:us-east-1:129346407469:loadbalancer/app/skyx-prod-alb/daa606ab7cfc22fc",
-  "arn:aws:elasticloadbalancing:us-east-1:129346407469:loadbalancer/app/skyx-prod-frontend/7841fca276b64cd7",
+  "arn:aws:elasticloadbalancing:us-east-1:129346407469:loadbalancer/app/skyx-prod-frontend-alb/7841fca276b64cd7",
 ]) {
   if (!associationArns.has(arn)) {
     throw new Error(`Missing WAF association for ${arn}`);

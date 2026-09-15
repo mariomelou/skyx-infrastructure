@@ -5,6 +5,7 @@ import { skyxProduction } from "../config/skyx-prod.js";
 
 export interface SkyxWafStackProps extends cdk.StackProps {
   mode: "count";
+  includeAssociations?: boolean;
 }
 
 /**
@@ -40,21 +41,29 @@ export class SkyxWafStack extends cdk.Stack {
         this.managedRule("KnownBadInputsRuleSet", 1),
       ],
     });
+    webAcl.cfnOptions.deletionPolicy = cdk.CfnDeletionPolicy.RETAIN;
+    webAcl.cfnOptions.updateReplacePolicy = cdk.CfnDeletionPolicy.RETAIN;
 
-    new wafv2.CfnWebACLAssociation(this, "ApiAlbAssociation", {
-      resourceArn: skyxProduction.loadBalancers.api.arn,
-      webAclArn: webAcl.attrArn,
-    });
+    if (props.includeAssociations !== false) {
+      const apiAssociation = new wafv2.CfnWebACLAssociation(this, "ApiAlbAssociation", {
+        resourceArn: skyxProduction.loadBalancers.api.arn,
+        webAclArn: webAcl.attrArn,
+      });
+      apiAssociation.cfnOptions.deletionPolicy = cdk.CfnDeletionPolicy.RETAIN;
+      apiAssociation.cfnOptions.updateReplacePolicy = cdk.CfnDeletionPolicy.RETAIN;
 
-    new wafv2.CfnWebACLAssociation(this, "FrontendAlbAssociation", {
-      resourceArn: skyxProduction.loadBalancers.frontend.arn,
-      webAclArn: webAcl.attrArn,
-    });
+      const frontendAssociation = new wafv2.CfnWebACLAssociation(this, "FrontendAlbAssociation", {
+        resourceArn: skyxProduction.loadBalancers.frontend.arn,
+        webAclArn: webAcl.attrArn,
+      });
+      frontendAssociation.cfnOptions.deletionPolicy = cdk.CfnDeletionPolicy.RETAIN;
+      frontendAssociation.cfnOptions.updateReplacePolicy = cdk.CfnDeletionPolicy.RETAIN;
+    }
   }
 
   private managedRule(name: string, priority: number): wafv2.CfnWebACL.RuleProperty {
     return {
-      name: `AWS-${name}`,
+      name: `AWS-AWSManagedRules${name}`,
       overrideAction: { count: {} },
       priority,
       statement: {
