@@ -1,6 +1,6 @@
 # Adoption wave 1 — ECR repositories
 
-Status: proposal and unexecuted import prepared for review. The opt-in template and a CloudFormation import change set were created and inspected; no repository import, image change, or production deployment was executed.
+Status: executed and verified on 2026-09-15. The opt-in template and CloudFormation import change set were reviewed; the existing repository was imported without an image change or generic production deployment.
 
 ## Recommendation
 
@@ -40,7 +40,7 @@ The component must not declare ECS services, task definitions, IAM application r
 
 ## Prepared change-set evidence
 
-The opt-in template was synthesized for `skyx-backend`. Change set `skyx-ecr-backend-import-20260912` is `CREATE_COMPLETE` with action `Import` for exactly one `AWS::ECR::Repository` resource (`Repository` -> `skyx-backend`), no replacement, and no scope details. The stack is currently `REVIEW_IN_PROGRESS`; the change set has not been executed. The current state therefore remains pending explicit approval for execution.
+The opt-in template was synthesized for `skyx-backend`. Change set `skyx-ecr-backend-import-20260912` was `CREATE_COMPLETE` with action `Import` for exactly one `AWS::ECR::Repository` resource (`Repository` -> `skyx-backend`), no replacement, and no scope details. After explicit approval, CloudFormation events recorded `Repository IMPORT_COMPLETE`, `Repository UPDATE_COMPLETE`, and stack `SkyxEcrAdoption IMPORT_COMPLETE`.
 
 The exact execution gate and approval text are recorded in [approval-packet-ecr-2026-09-12.md](approval-packet-ecr-2026-09-12.md).
 

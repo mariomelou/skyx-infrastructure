@@ -38,4 +38,4 @@ The proposed first candidate is one ECR repository in a dedicated `SkyxEcrAdopti
 
 ## Current decision
 
-No resource has been imported in the current commit. The ECR wave is scoped as the first candidate, and its opt-in template plus import-only change set have been prepared and validated, but execution remains pending explicit approval. This plan defines the safe boundary and sequence; it does not authorize an import or production deployment.
+The first ECR wave was imported after explicit approval on 2026-09-15. Its opt-in template and import-only change set were reviewed before execution, and CloudFormation recorded successful completion for the existing `skyx-backend` repository. This plan continues to define the safe boundary and sequence for the remaining resource-by-resource imports and hardening changes; it does not authorize those subsequent production mutations.

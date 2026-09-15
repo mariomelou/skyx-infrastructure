@@ -1,6 +1,6 @@
 # SkyX production inventory — 2026-09-12
 
-Status: bounded read-only observation plus authenticated CDK diff. No SkyX application resources were created, changed, imported, deleted, or deployed by this project. The authenticated diff published its generated template asset to existing CDK bootstrap storage; it did not create the `SkyxAdoption` stack or any application resource.
+Status: initial bounded read-only observation plus authenticated CDK diff. The later, separately approved ECR adoption import is recorded below; no other SkyX application resource was created, changed, deleted, or deployed by this project. The authenticated diff published its generated template asset to existing CDK bootstrap storage; it did not create the `SkyxAdoption` stack or any application resource.
 
 ## Access and evidence boundary
 
@@ -31,4 +31,8 @@ The inventory was performed in the AWS Console using the existing Chrome session
 
 ## Not claimed by this inventory
 
-This inventory deliberately does not claim CloudFormation ownership or import execution. The resource-by-resource adoption design is documented separately, but no component-specific change set, import, hardening change, or production deployment has been performed.
+This inventory was captured before CloudFormation ownership was established and deliberately does not infer ownership for components other than the ECR import recorded below. The resource-by-resource adoption design and hardening boundaries remain documented separately.
+
+## Subsequent ECR adoption evidence — 2026-09-15
+
+After explicit approval, CloudFormation change set `skyx-ecr-backend-import-20260912` was executed in account `129346407469`, region `us-east-1`. The change set contained exactly one `Import` action for `AWS::ECR::Repository` logical ID `Repository`, physical repository `skyx-backend`, with no replacement. CloudFormation events show `Repository IMPORT_COMPLETE`, `Repository UPDATE_COMPLETE`, and stack `SkyxEcrAdoption IMPORT_COMPLETE`. No hardening component was executed.
