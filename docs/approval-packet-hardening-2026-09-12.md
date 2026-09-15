@@ -6,6 +6,8 @@
 
 The protected GitHub `production` environment is still absent, so no production job can run. Even after an administrator creates it, each component below requires its own reviewed diff/change set and explicit approval.
 
+The confirmed decisions are recorded in [`docs/decision-log-2026-09-15.md`](decision-log-2026-09-15.md): Aurora protection/backup/PITR, externally managed application roles, HTTP-to-HTTPS intent once certificates exist, ECS scaling values, WAF COUNT mode, external Control Tower Config ownership, and ECS circuit-breaker enable/rollback behavior.
+
 ## Components ready for a reviewed change set
 
 | Component | Inputs to approve | Expected resources | Safety boundary |
@@ -24,14 +26,14 @@ npm run verify:waf
 npm run verify:log-retention
 ```
 
-## Still decision-gated before executable template work
+## Still gated before executable template work
 
 - TLS/ACM/listeners: canonical hostnames, DNS ownership, certificate validation, HTTPS policy, redirects, and application URL rollout.
 - Security groups/routes/VPC endpoints: dependency evidence, private-egress decision, endpoint placement/policy, cost and availability analysis.
-- ECS circuit breaker: complete service snapshot, failure rehearsal, alarm/health signal, and rollback plan.
-- Aurora protection: deletion-protection and backup/PITR policy, snapshot/restore evidence, complete cluster diff, and maintenance window.
-- AWS Config: Control Tower owner confirmation and any rule/exception ownership.
-- Application IAM/listeners: exact policy/trust/listener diff, IAM simulation, and `iam:PassRole` review if applicable.
+- ECS circuit breaker: complete service snapshot, failure rehearsal, alarm/health signal, rollback plan, and execution approval; the target `enable=true` / `rollback=true` is confirmed.
+- Aurora protection: snapshot/restore evidence, complete cluster diff, maintenance window, and execution approval; the target policy is confirmed as deletion protection, 30-day backups, and PITR.
+- AWS Config: no mutation is planned; keep recorder/delivery/rules under the Control Tower boundary as confirmed.
+- Application IAM/listeners: preserve external application roles and prepare the HTTP-to-HTTPS listener diff after hostnames/certificates exist; any additional policy/trust change still needs exact scope and IAM simulation.
 
 These gates are documented in the linked design files and must not be bypassed by adding a generic deploy path.
 
