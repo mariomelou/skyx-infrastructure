@@ -193,8 +193,10 @@ export const skyxProduction = {
       trustPrincipal: "ecs-tasks.amazonaws.com",
       policies: ["SkyXApiTaskRolePolicy"],
       cognitoActions: ["cognito-idp:AdminCreateUser", "cognito-idp:AdminGetUser"],
-      observedCognitoResource:
+      previousObservedCognitoResource:
         "arn:aws:cognito-idp:us-east-1:*:userpool/*",
+      observedCognitoResource:
+        "arn:aws:cognito-idp:us-east-1:129346407469:userpool/us-east-1_wiOmAOPbu",
       intendedCognitoResource:
         "arn:aws:cognito-idp:us-east-1:129346407469:userpool/us-east-1_wiOmAOPbu",
       permissionsBoundary: false,
