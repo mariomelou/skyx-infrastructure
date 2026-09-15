@@ -35,6 +35,10 @@ The documentation update was published at commit `dfeeb9b874a37e7e5f7e630ced0532
 
 With the correct `AdministratorAccess/mario` session in account `129346407469`, the AWS Console shows `SkyXGitHubActionsEcrRole` with three inline policies: `SkyXEcrPush`, `SkyxEcsMigrationRunTask`, and the newly created `SkyxEcsPassRole`. The policy preview confirms one `iam:PassRole` statement restricted to `SkyXApiTaskRole` and `SkyXEcsTaskExecutionRole`, with `iam:PassedToService` equal to `ecs-tasks.amazonaws.com`. No wildcard resource, `AdministratorAccess`, or generated `AWSReservedSSO` role edit was used for this grant. A separate read-only check of `SkyXApiTaskRole` confirms the ECS trust and Cognito actions, but found the Cognito resource wildcard documented above; no policy correction was applied. This authorizes the deployment role to submit ECS task definitions using the existing roles; it does not execute a backend pipeline, migration, CloudFormation import, or IaC hardening change.
 
+## Current component and GitHub gate revalidation — 2026-09-15
+
+Sequential local validation passed for `verify:ecr`, `verify:observability`, `verify:ecs-scaling`, `verify:waf`, and `verify:log-retention`. These checks validate templates and ownership boundaries only; they do not deploy or import resources. `verify:production-gate` remains correctly blocked with `PRODUCTION_GATE_BLOCKED` because the `production` environment is absent or unreadable to the current token. The authenticated GitHub web session likewise shows no access to repository options, so no unprotected fallback was created.
+
 ## Handoff evidence — 2026-09-14
 
 The technical lead supplied an AWS Console snapshot showing `skyx-api:5` as an active Fargate task definition with `SkyXApiTaskRole` assigned to the task role field and `SkyXEcsTaskExecutionRole` retained as the execution role. The previously pending rollout was later executed after explicit approval and independently revalidated at the ECS service and active task-definition surfaces. No IaC deployment or application migration was performed by this repository.
