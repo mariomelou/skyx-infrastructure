@@ -188,6 +188,17 @@ export const skyxProduction = {
     "skyx/prod/database-admin-url",
   ],
   iam: {
+    apiTaskRole: {
+      name: "SkyXApiTaskRole",
+      trustPrincipal: "ecs-tasks.amazonaws.com",
+      policies: ["SkyXApiTaskRolePolicy"],
+      cognitoActions: ["cognito-idp:AdminCreateUser", "cognito-idp:AdminGetUser"],
+      observedCognitoResource:
+        "arn:aws:cognito-idp:us-east-1:*:userpool/*",
+      intendedCognitoResource:
+        "arn:aws:cognito-idp:us-east-1:129346407469:userpool/us-east-1_wiOmAOPbu",
+      permissionsBoundary: false,
+    },
     ecsTaskExecutionRole: {
       name: "SkyXEcsTaskExecutionRole",
       trustPrincipal: "ecs-tasks.amazonaws.com",
@@ -202,7 +213,11 @@ export const skyxProduction = {
       name: "SkyXGitHubActionsEcrRole",
       trustPrincipal: "token.actions.githubusercontent.com",
       oidcAudience: "sts.amazonaws.com",
-      policies: ["SkyXEcrPush", "SkyxEcsMigrationRunTask"],
+      policies: [
+        "SkyXEcrPush",
+        "SkyxEcsMigrationRunTask",
+        "SkyxEcsPassRole",
+      ],
       permissionsBoundary: false,
     },
     codeBuildRole: {
