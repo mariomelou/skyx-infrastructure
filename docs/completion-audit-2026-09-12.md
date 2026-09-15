@@ -27,6 +27,8 @@ Read-only AWS revalidation confirms `SkyxAdoption` is absent, `SkyxEcrAdoption` 
 
 With the correct `AdministratorAccess/mario` session in account `129346407469`, the explicitly approved ECS service update completed successfully. The service `skyx-api` now targets `skyx-api:5`; the events show the new task started, one target registered, the previous `skyx-api:4` task drained and stopped, and the service returned to steady state. The final console state is 1 desired/1 running task, deployment status `Success`, and `skyx-api:8000` at `1 Healthy / 0 Unhealthy` behind `skyx-prod-alb`. The active revision's task-definition page exposes `SkyXApiTaskRole` and `SkyXEcsTaskExecutionRole`. This was a direct ECS service rollout, not a CDK/CloudFormation deployment, and the deployment circuit breaker remains off.
 
+The documentation update was published at commit `dfeeb9b874a37e7e5f7e630ced0532e2f2851307`; GitHub Actions run `34919854234` completed successfully with the production mutation jobs skipped.
+
 ## Handoff evidence — 2026-09-14
 
 The technical lead supplied an AWS Console snapshot showing `skyx-api:5` as an active Fargate task definition with `SkyXApiTaskRole` assigned to the task role field and `SkyXEcsTaskExecutionRole` retained as the execution role. The previously pending rollout was later executed after explicit approval and independently revalidated at the ECS service and active task-definition surfaces. No IaC deployment or application migration was performed by this repository.
