@@ -1,6 +1,6 @@
 # SkyX production hardening plan — 2026-09-12
 
-Status: design and approval matrix only. No hardening change in this document has been synthesized into an owning production stack or applied to AWS. The current reference-only manifest and the ECR adoption wave remain separate.
+Status: design, approval matrix, and local template-verification phase. No hardening change in this document has been synthesized into an owning production stack or applied to AWS. The current reference-only manifest and the completed ECR adoption wave remain separate.
 
 ## Hardening matrix
 
@@ -28,4 +28,4 @@ Status: design and approval matrix only. No hardening change in this document ha
 
 ## Current conclusion
 
-The hardening requirements are now designed and explicitly separated from adoption. Safe implementation slices now include the opt-in `SkyxObservability`, `SkyxEcsScaling`, `SkyxWaf`, and import-oriented `SkyxLogRetention` components documented in their respective design files and consolidated in `docs/approval-packet-hardening-2026-09-12.md`; they synthesize only alarm, Application Auto Scaling, WAF, or retained log-group templates and do not create or adopt ECS services, ALBs, Aurora, or logging destinations. All production rows remain pending or approval-gated except the read-only inventory evidence and the decision to preserve Control Tower ownership. No TLS, WAF, network, ECS service, alarm, Config, log-retention, Aurora, IAM-application, or listener mutation is authorized by this document without its own reviewed diff and explicit approval.
+The hardening requirements are now designed and explicitly separated from adoption. Safe implementation slices include the opt-in `SkyxObservability`, `SkyxEcsScaling`, `SkyxWaf`, and import-oriented `SkyxLogRetention` components documented in their respective design files and consolidated in `docs/approval-packet-hardening-2026-09-12.md`; all four pass local template verification and synthesize only alarm, Application Auto Scaling, WAF, or retained log-group templates. They do not create or adopt ECS services, ALBs, Aurora, or logging destinations. The observability slice is currently blocked on an approved SNS destination because the account has no topic in `us-east-1`. All production rows remain pending or approval-gated except the read-only inventory evidence, the completed ECR adoption, and the decision to preserve Control Tower ownership. No TLS, WAF, network, ECS service, alarm, Config, log-retention, Aurora, IAM-application, or listener mutation is authorized by this document without its own reviewed diff and explicit approval.
