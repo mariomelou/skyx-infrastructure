@@ -2,7 +2,7 @@
 
 ## Status
 
-`EVIDÊNCIA PROVADA / PASSROLE APLICADO / LISTENER HARDENING PENDENTE`. Existing application roles and ALB listeners remain externally managed; no replacement role or listener mutation was performed.
+`EVIDÊNCIA PROVADA / PASSROLE APLICADO / COGNITO SCOPE PENDENTE / LISTENER HARDENING PENDENTE`. Existing application roles and ALB listeners remain externally managed; no replacement role or listener mutation was performed.
 
 ## IAM boundary
 
@@ -41,7 +41,7 @@ The intended statement is limited to the two existing ECS roles and the ECS task
 
 AWS Console evidence on 2026-09-15 in account `129346407469` shows the inline policy `SkyxEcsPassRole` attached to `SkyXGitHubActionsEcrRole` with exactly the statement above. The policy preview shows `iam:PassRole`, the two exact ECS role resources, and `iam:PassedToService = ecs-tasks.amazonaws.com`. No `AdministratorAccess` or wildcard `PassRole` was added, and no generated `AWSReservedSSO` role was edited.
 
-The scoped IAM grant is now `PROVADO`. The remaining operational verification is to confirm the task-role trust is `ecs-tasks.amazonaws.com`, Cognito actions are restricted to the intended user pool, the active `skyx-api:5` definition retains the task and execution roles, and a rerun of the backend pipeline completes migrations and deployment successfully. If console deployment is required, update the IAM Identity Center permission set instead.
+The scoped deployment-role grant is now `PROVADO`. Read-only AWS Console validation also confirms that `SkyXApiTaskRole` trusts `ecs-tasks.amazonaws.com` and includes `cognito-idp:AdminCreateUser` and `cognito-idp:AdminGetUser`; however, its current `Resource` is still `arn:aws:cognito-idp:us-east-1:*:userpool/*`. The Cognito policy gate therefore remains `PENDENTE`: narrow that resource to the intended pool `arn:aws:cognito-idp:us-east-1:129346407469:userpool/us-east-1_wiOmAOPbu`, then revalidate the active `skyx-api:5` definition and rerun the backend pipeline. If console deployment is required, update the IAM Identity Center permission set instead.
 
 ## Listener boundary
 
@@ -49,4 +49,4 @@ The API and frontend ALBs currently expose HTTP:80 listeners and existing target
 
 ## Gate
 
-The current state is `PROVADO` for the scoped application-delivery `PassRole` grant and ownership boundary, and `PENDENTE` for any listener hardening or broader application-role change. A future change must show the exact policy/listener diff, replacement/deletion analysis, IAM simulation, target-group preservation, rollback path, and protected-environment approval.
+The current state is `PROVADO` for the scoped application-delivery `PassRole` grant and ownership boundary, and `PENDENTE` for the Cognito resource restriction, listener hardening, or broader application-role change. A future change must show the exact policy/listener diff, replacement/deletion analysis, IAM simulation, target-group preservation, rollback path, and protected-environment approval.
