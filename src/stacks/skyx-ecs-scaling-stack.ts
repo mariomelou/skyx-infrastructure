@@ -63,7 +63,8 @@ export class SkyxEcsScalingStack extends cdk.Stack {
     );
 
     new appscaling.CfnScalingPolicy(this, `${prefix}CpuScalingPolicy`, {
-      policyName: `skyx-prod-${serviceName}-cpu-target-tracking`,
+      policyName:
+        serviceName === "skyx-api" ? "skyx-api-cpu-60" : "skyx-frontend-cpu-60",
       policyType: "TargetTrackingScaling",
       scalingTargetId: scalableTarget.ref,
       serviceNamespace: "ecs",

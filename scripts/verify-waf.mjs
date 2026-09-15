@@ -30,7 +30,8 @@ const webAcl = webAcls[0].Properties ?? {};
 if (
   webAcl.Scope !== "REGIONAL" ||
   webAcl.DefaultAction?.Allow === undefined ||
-  webAcl.Rules?.length !== 2
+  webAcl.Rules?.length !== 2 ||
+  webAcl.VisibilityConfig?.MetricName !== "skyxProdRegionalCount"
 ) {
   throw new Error("WAF template drifted from the regional allow/count design");
 }
@@ -44,6 +45,16 @@ for (const rule of webAcl.Rules) {
     )
   ) {
     throw new Error("Every WAF rule must be an AWS managed rule group in COUNT mode");
+  }
+}
+
+const ruleMetricNames = new Set(webAcl.Rules.map((rule) => rule.VisibilityConfig?.MetricName));
+for (const expectedName of [
+  "AWS-AWSManagedRulesCommonRuleSet",
+  "AWS-AWSManagedRulesKnownBadInputsRuleSet",
+]) {
+  if (!ruleMetricNames.has(expectedName)) {
+    throw new Error(`Missing live WAF metric name ${expectedName}`);
   }
 }
 

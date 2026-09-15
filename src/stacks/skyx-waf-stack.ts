@@ -32,7 +32,7 @@ export class SkyxWafStack extends cdk.Stack {
       scope: "REGIONAL",
       visibilityConfig: {
         cloudWatchMetricsEnabled: true,
-        metricName: "skyx-prod-regional-waf-count",
+        metricName: "skyxProdRegionalCount",
         sampledRequestsEnabled: true,
       },
       rules: [
@@ -65,7 +65,7 @@ export class SkyxWafStack extends cdk.Stack {
       },
       visibilityConfig: {
         cloudWatchMetricsEnabled: true,
-        metricName: `skyx-prod-${name.toLowerCase()}-count`,
+        metricName: `AWS-AWSManagedRules${name}`,
         sampledRequestsEnabled: true,
       },
     };

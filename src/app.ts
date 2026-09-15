@@ -13,6 +13,8 @@ import {
 } from "./stacks/skyx-ecs-scaling-stack.js";
 import { SkyxWafStack } from "./stacks/skyx-waf-stack.js";
 import { SkyxLogRetentionStack } from "./stacks/skyx-log-retention-stack.js";
+import { SkyxAuroraProtectionStack } from "./stacks/skyx-aurora-protection-stack.js";
+import { SkyxEcsCircuitBreakerStack } from "./stacks/skyx-ecs-circuit-breaker-stack.js";
 
 const app = new cdk.App();
 
@@ -65,12 +67,19 @@ if (adoptionComponent === "ecr") {
 
 if (
   hardeningComponent !== undefined &&
-  !["observability", "ecs-scaling", "waf", "log-retention"].includes(
+  ![
+    "observability",
+    "ecs-scaling",
+    "waf",
+    "log-retention",
+    "aurora-protection",
+    "ecs-circuit-breaker",
+  ].includes(
     hardeningComponent,
   )
 ) {
   throw new Error(
-    `Unsupported hardeningComponent '${String(hardeningComponent)}'; use 'observability', 'ecs-scaling', 'waf', or 'log-retention'.`,
+    `Unsupported hardeningComponent '${String(hardeningComponent)}'; use 'observability', 'ecs-scaling', 'waf', 'log-retention', 'aurora-protection', or 'ecs-circuit-breaker'.`,
   );
 }
 
@@ -148,6 +157,22 @@ if (hardeningComponent === "log-retention") {
     },
     description:
       "Import-oriented retention template for existing SkyX ECS log groups; retain log data on removal or replacement.",
+  });
+}
+
+if (hardeningComponent === "aurora-protection") {
+  new SkyxAuroraProtectionStack(app, "SkyxAuroraProtection", {
+    env: { account: skyxProduction.accountId, region: skyxProduction.region },
+    description:
+      "Import-oriented Aurora protection settings; retain the existing production cluster and do not run migrations.",
+  });
+}
+
+if (hardeningComponent === "ecs-circuit-breaker") {
+  new SkyxEcsCircuitBreakerStack(app, "SkyxEcsCircuitBreaker", {
+    env: { account: skyxProduction.accountId, region: skyxProduction.region },
+    description:
+      "Import-oriented ECS deployment circuit-breaker settings for existing services; retain task definitions and IAM roles.",
   });
 }
 

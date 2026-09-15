@@ -39,6 +39,13 @@ for (const resourceId of [
   }
 }
 
+const policyNames = new Set(scalingPolicies.map((policy) => policy.Properties?.PolicyName));
+for (const expectedName of ["skyx-api-cpu-60", "skyx-frontend-cpu-60"]) {
+  if (!policyNames.has(expectedName)) {
+    throw new Error(`Missing live ECS target-tracking policy name ${expectedName}`);
+  }
+}
+
 for (const policy of scalingPolicies) {
   const properties = policy.Properties ?? {};
   const tracking = properties.TargetTrackingScalingPolicyConfiguration;
