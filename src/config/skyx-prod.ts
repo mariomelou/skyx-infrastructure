@@ -40,7 +40,7 @@ export const skyxProduction = {
       serviceName: "skyx-api",
       serviceArn:
         "arn:aws:ecs:us-east-1:129346407469:service/skyx-prod/skyx-api",
-      taskDefinition: "skyx-api:4",
+      taskDefinition: "skyx-api:5",
       containerPort: 8000,
       imageRepository: "skyx-backend",
       logGroup: "/ecs/skyx-api",

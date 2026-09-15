@@ -2,7 +2,7 @@
 
 ## Status
 
-`EVIDÊNCIA PROVADA / APLICAÇÃO PENDENTE`. Existing application roles and ALB listeners remain externally managed; no replacement role, listener, `iam:PassRole`, or production policy mutation was performed.
+`EVIDÊNCIA PROVADA / PASSROLE APLICADO / LISTENER HARDENING PENDENTE`. Existing application roles and ALB listeners remain externally managed; no replacement role or listener mutation was performed.
 
 ## IAM boundary
 
@@ -11,9 +11,9 @@
 - ECS execution, GitHub OIDC application delivery, and CodeBuild roles are inventoried as externally owned. This repository does not recreate them.
 - Any future application-role change requires a separate policy/trust diff, IAM simulation for allowed and denied actions, `iam:PassRole` review if relevant, and an explicit approval.
 
-## Pending ECS task-role handoff permission
+## ECS task-role handoff permission
 
-The backend deployment role `SkyXGitHubActionsEcrRole` still needs a separately reviewed, least-privilege `iam:PassRole` statement before the backend workflow can submit an ECS task definition that uses the active roles. This is an application-delivery IAM change, not a permission to add to `SkyXIacDeployRole`, and it has not been applied by this repository or through the AWS Console.
+The backend deployment role `SkyXGitHubActionsEcrRole` now has the separately reviewed, least-privilege `iam:PassRole` statement required for the backend workflow to submit an ECS task definition that uses the active roles. This is an application-delivery IAM change, not a permission added to `SkyXIacDeployRole`.
 
 The intended statement is limited to the two existing ECS roles and the ECS tasks service:
 
@@ -39,7 +39,9 @@ The intended statement is limited to the two existing ECS roles and the ECS task
 }
 ```
 
-Required verification before marking this gate `PROVADO`: confirm the task-role trust is `ecs-tasks.amazonaws.com`, Cognito actions are restricted to the intended user pool, the active `skyx-api:5` definition retains the task and execution roles, and a rerun of the backend pipeline completes migrations and deployment successfully. Do not grant `AdministratorAccess`, wildcard `PassRole`, or edit a generated `AWSReservedSSO` role directly; if console deployment is required, update the IAM Identity Center permission set instead.
+AWS Console evidence on 2026-09-15 in account `129346407469` shows the inline policy `SkyxEcsPassRole` attached to `SkyXGitHubActionsEcrRole` with exactly the statement above. The policy preview shows `iam:PassRole`, the two exact ECS role resources, and `iam:PassedToService = ecs-tasks.amazonaws.com`. No `AdministratorAccess` or wildcard `PassRole` was added, and no generated `AWSReservedSSO` role was edited.
+
+The scoped IAM grant is now `PROVADO`. The remaining operational verification is to confirm the task-role trust is `ecs-tasks.amazonaws.com`, Cognito actions are restricted to the intended user pool, the active `skyx-api:5` definition retains the task and execution roles, and a rerun of the backend pipeline completes migrations and deployment successfully. If console deployment is required, update the IAM Identity Center permission set instead.
 
 ## Listener boundary
 
@@ -47,4 +49,4 @@ The API and frontend ALBs currently expose HTTP:80 listeners and existing target
 
 ## Gate
 
-The current state is `PROVADO` as an ownership boundary and `PENDENTE` for any application-role or listener hardening. A future change must show the exact policy/listener diff, replacement/deletion analysis, IAM simulation, target-group preservation, rollback path, and protected-environment approval.
+The current state is `PROVADO` for the scoped application-delivery `PassRole` grant and ownership boundary, and `PENDENTE` for any listener hardening or broader application-role change. A future change must show the exact policy/listener diff, replacement/deletion analysis, IAM simulation, target-group preservation, rollback path, and protected-environment approval.

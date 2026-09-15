@@ -10,7 +10,7 @@ Read-only `ecs describe-services` evidence for cluster `skyx-prod` shows:
 
 | Service | Desired/running | Deployment controller | Circuit breaker | Rollout settings | Task definition |
 | --- | --- | --- | --- | --- | --- |
-| `skyx-api` | `1/1` | `ECS` | `enable=false`, `rollback=false` | `ROLLING`, `maximumPercent=200`, `minimumHealthyPercent=100` | `skyx-api:4` |
+| `skyx-api` | `1/1` | `ECS` | `enable=false`, `rollback=false` | `ROLLING`, `maximumPercent=200`, `minimumHealthyPercent=100` | `skyx-api:5` |
 | `skyx-frontend` | `1/1` | `ECS` | `enable=false`, `rollback=false` | `ROLLING`, `maximumPercent=200`, `minimumHealthyPercent=100` | `skyx-frontend:1` |
 
 Both services have no deployment alarm configuration. Backend migrations remain owned by the backend release workflow and must not be coupled to this change.
